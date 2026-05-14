@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>RampageMaster · Kaiju Pocket Pet v6</title>
+  <style>
+    :root {
+      --bg: #05060d;
+      --panel: #101320;
+      --accent: #ffd76b;
+      --neon: #66ff88;
+      --ink: #eff7ff;
+      --muted: #95a6c9;
+      --line: rgba(150,190,255,0.18);
+      --hot: #ff4f7a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { 
+      background: var(--bg); 
+      color: var(--ink); 
+      font-family: 'Segoe UI', system-ui, sans-serif; 
+      overflow: hidden; 
+      height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    canvas { 
+      display: block; 
+      width: 100%; 
+      height: 100%; 
+      cursor: crosshair; 
+      image-rendering: pixelated; 
+    }
+    
+    /* UI Overlay */
+    #ui {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    
+    .card {
+      background: rgba(16, 19, 32, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      pointer-events: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    
+    .stats-card { width: 200px; }
+    .wallet-card { width: 150px; text-align: right; }
+    
+    h1 { font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .stat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; }
+    .stat-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    .stat-fill { height: 100%; transition: width 0.3s ease; }
+    
+    .controls-bottom {
+      margin-top: auto;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      pointer-events: none;
+    }
+    
+    .btn {
+      pointer-events: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn:hover { background: var(--line); transform: translateY(-2px); }
+    .btn.primary { background: var(--accent); color: #000; border: none; }
+    .btn.hot { border-color: var(--hot); color: var(--hot); }
+    .btn.hot:hover { background: var(--hot); color: #fff; }
+    
+    .toast {
+      position: absolute;
+      top: 100px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--neon);
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 100;
+    }
+    
+    #hatchOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      pointer-events: auto;
+    }
+    .egg-visual {
+      width: 120px; height: 160px;
+      background: radial-gradient(circle at 30% 30%, #ffd76b, #b87422);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .egg-visual:active { transform: scale(0.95) rotate(5deg); }
+  </style>
+</head>
+<body>
+  <div id="hatchOverlay">
+    <h1 style="font-size: 24px; margin-bottom: 40px;">Tap to Hatch Your Kaiju</h1>
+    <div class="egg-visual" id="eggBtn"></div>
+    <p style="margin-top: 20px; color: var(--muted);">3 Taps Remaining</p>
+  </div>
+
+  <div id="ui" style="display:none">
+    <div class="hud-top">
+      <div class="card stats-card">
+        <h1 id="petName">MOCHI · LV 1</h1>
+        <div class="stat-row"><span>HUNGER</span><div class="stat-bar"><div id="bar-food" class="stat-fill" style="background:var(--accent)"></div></div></div>
+        <div class="stat-row"><span>ENERGY</span><div class="stat-bar"><div id="bar-energy" class="stat-fill" style="background:var(--neon)"></div></div></div>
+        <div class="stat-row"><span>HEALTH</span><div class="stat-bar"><div id="bar-health" class="stat-fill" style="background:var(--hot)"></div></div></div>
+      </div>
+      <div class="card wallet-card">
+        <h1>BONES</h1>
+        <div id="boneCount" style="font-size: 20px; font-weight: 900; color: var(--accent);">180</div>
+      </div>
+    </div>
+    
+    <div class="controls-bottom">
+      <button class="btn" onclick="act('feed')">🍖<span>FEED</span></button>
+      <button class="btn" onclick="act('train')">⚔️<span>TRAIN</span></button>
+      <button class="btn" onclick="act('rest')">💤<span>REST</span></button>
+      <button class="btn primary" onclick="act('rampage')">🔥<span>RAMPAGE</span></button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const eggBtn = document.getElementById('eggBtn');
+      const hatchOverlay = document.getElementById('hatchOverlay');
+      const ui = document.getElementById('ui');
+      const toast = document.getElementById('toast');
+
+      // State
+      let W, H, groundY, horizonY;
+      let hatched = false;
+      let hatchTaps = 0;
+      let pet = {
+        name: 'MOCHI', level: 1, xp: 0,
+        food: 80, energy: 80, health: 100,
+        bones: 180,
+        x: 0, y: 0, targetX: 0,
+        frame: 0
+      };
+      
+      let buildings = [];
+      let citizens = [];
+      let stars = [];
+      let shake = 0;
+
+      // ──────────────────────────────────
+      // PIXEL CHARACTER GENERATOR (32x32)
+      // ──────────────────────────────────
+      class PixelEntity {
+        constructor(type) {
+          this.canvas = document.createElement('canvas');
+          this.canvas.width = 32; this.canvas.height = 32;
+          this.ctx = this.canvas.getContext('2d');
+          this.type = type;
+          this.generate();
+        }
+        generate() {
+          const c = this.ctx;
+          c.clearRect(0, 0, 32, 32);
+          if (this.type === 'citizen') {
+            const skin = ['#ffdbac', '#f1c27d', '#e0ac69', '#8d5524'][Math.floor(Math.random()*4)];
+            const shirt = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f'][Math.floor(Math.random()*4)];
+            c.fillStyle = '#333'; c.fillRect(12, 26, 3, 6); c.fillRect(17, 26, 3, 6);
+            c.fillStyle = shirt; c.fillRect(11, 16, 10, 10);
+            c.fillStyle = skin; c.fillRect(11, 7, 10, 9);
+            c.fillStyle = '#000'; c.fillRect(13, 10, 2, 2); c.fillRect(17, 10, 2, 2);
+          } else { // Kaiju
+            c.fillStyle = '#2d1b4d'; // Body
+            c.fillRect(6, 10, 20, 18);
+            c.fillStyle = '#66ff88'; // Glow
+            c.fillRect(10, 14, 4, 4); c.fillRect(18, 14, 4, 4);
+            c.fillStyle = '#000'; // Eyes
+            c.fillRect(11, 15, 2, 2); c.fillRect(19, 15, 2, 2);
+            c.fillStyle = '#ff4f7a'; // Spikes
+            for(let i=0; i<3; i++) c.fillRect(8 + i*6, 6, 4, 4);
+          }
+        }
+        draw(ctx, x, y, flip, frame, scale = 1) {
+          ctx.save();
+          ctx.translate(x, y);
+          if (flip) ctx.scale(-1, 1);
+          const bob = Math.sin(frame * 0.15) * 3;
+          ctx.drawImage(this.canvas, -16 * scale, (-32 + bob) * scale, 32 * scale, 32 * scale);
+          ctx.restore();
+        }
+      }
+
+      class Building {
+        constructor(x, w, h) {
+          this.x = x; this.w = w; this.h = h;
+          this.hp = 100; this.destroyed = false;
+        }
+        draw(ctx) {
+          const visH = this.h * (this.hp / 100);
+          const y = groundY - visH;
+          ctx.fillStyle = this.hp > 0 ? '#1a1a2e' : '#050505';
+          ctx.fillRect(this.x, y, this.w, visH);
+          if (this.hp > 0) {
+            ctx.fillStyle = '#ffff88';
+            ctx.globalAlpha = 0.3;
+            for(let i=0; i<3; i++) ctx.fillRect(this.x + 10, y + 10 + i*20, 10, 10);
+            ctx.globalAlpha = 1;
+          }
+        }
+      }
+
+      class Citizen {
+        constructor() {
+          this.sprite = new PixelEntity('citizen');
+          this.reset();
+        }
+        reset() {
+          this.x = Math.random() * W;
+          this.vx = (Math.random() - 0.5) * 2;
+          this.panic = 0;
+          this.alive = true;
+        }
+        update() {
+          if (!this.alive) return;
+          this.x += this.vx * (this.panic > 0 ? 3 : 1);
+          if (this.panic > 0) this.panic--;
+          if (this.x < -50) this.x = W + 50;
+          if (this.x > W + 50) this.x = -50;
+        }
+        draw(ctx) {
+          if (!this.alive) return;
+          this.sprite.draw(ctx, this.x, groundY + 15, this.vx < 0, pet.frame);
+        }
+      }
+
+      function init() {
+        W = window.innerWidth; H = window.innerHeight;
+        canvas.width = W; canvas.height = H;
+        horizonY = H * 0.6; groundY = H * 0.85;
+        pet.x = W / 2; pet.targetX = W / 2;
+        
+        for(let i=0; i<100; i++) stars.push({ x: Math.random()*W, y: Math.random()*horizonY, s: Math.random()*2 });
+        let curX = 0;
+        while(curX < W) {
+          const w = 60 + Math.random()*100;
+          const h = 100 + Math.random()*(horizonY*0.8);
+          buildings.push(new Building(curX, w, h));
+          curX += w + 20 + Math.random()*40;
+        }
+        for(let i=0; i<15; i++) citizens.push(new Citizen());
+        
+        requestAnimationFrame(loop);
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, W, H);
+        
+        // Sky
+        const grad = ctx.createLinearGradient(0, 0, 0, horizonY);
+        grad.addColorStop(0, '#050510'); grad.addColorStop(1, '#1a1a2a');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, W, horizonY);
+        
+        ctx.fillStyle = '#fff';
+        stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.s, 0, Math.PI*2); ctx.fill(); });
+        
+        // Ground
+        ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, horizonY, W, H-horizonY);
+        
+        if (shake > 0) {
+          ctx.save();
+          ctx.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake);
+          shake *= 0.9;
+        }
+
+        buildings.forEach(b => b.draw(ctx));
+        citizens.forEach(c => { c.update(); c.draw(ctx); });
+
+        if (hatched) {
+          pet.frame++;
+          pet.x += (pet.targetX - pet.x) * 0.05;
+          const kaijuSprite = new PixelEntity('kaiju');
+          kaijuSprite.draw(ctx, pet.x, groundY, pet.targetX < pet.x, pet.frame, 3);
+          
+          // Passive stat drain
+          pet.food = Math.max(0, pet.food - 0.01);
+          pet.energy = Math.max(0, pet.energy - 0.005);
+          updateUI();
+        }
+
+        if (shake > 0) ctx.restore();
+        requestAnimationFrame(loop);
+      }
+
+      function updateUI() {
+        document.getElementById('bar-food').style.width = pet.food + '%';
+        document.getElementById('bar-energy').style.width = pet.energy + '%';
+        document.getElementById('bar-health').style.width = pet.health + '%';
+        document.getElementById('boneCount').textContent = Math.floor(pet.bones);
+        document.getElementById('petName').textContent = `${pet.name} · LV ${pet.level}`;
+      }
+
+      window.showToast = (msg) => {
+        toast.textContent = msg; toast.style.opacity = 1;
+        setTimeout(() => toast.style.opacity = 0, 2000);
+      };
+
+      window.act = (type) => {
+        if (type === 'feed') {
+          if (pet.bones >= 20) { pet.bones -= 20; pet.food = Math.min(100, pet.food + 30); showToast('Fed! +30 Hunger'); }
+          else showToast('Need 20 bones!');
+        }
+        if (type === 'train') {
+          if (pet.energy >= 20) { pet.energy -= 20; pet.xp += 25; showToast('Trained! +25 XP'); if(pet.xp >= 100){ pet.level++; pet.xp=0; showToast('LEVEL UP!'); } }
+          else showToast('Too tired!');
+        }
+        if (type === 'rest') { pet.energy = Math.min(100, pet.energy + 40); showToast('Rested! +40 Energy'); }
+        if (type === 'rampage') {
+          if (pet.energy >= 30) {
+            pet.energy -= 30; shake = 20;
+            let hits = 0;
+            buildings.forEach(b => {
+              if (Math.abs(b.x + b.w/2 - pet.x) < 200 && b.hp > 0) { b.hp = 0; hits++; }
+            });
+            citizens.forEach(c => { if(Math.abs(c.x - pet.x) < 250) c.panic = 200; });
+            const gain = hits * 50 + 20;
+            pet.bones += gain;
+            showToast(`RAMPAGE! Smashed ${hits} buildings, +${gain} bones`);
+          } else showToast('Need energy to rampage!');
+        }
+        updateUI();
+      };
+
+      eggBtn.addEventListener('click', () => {
+        hatchTaps++;
+        const remaining = 3 - hatchTaps;
+        document.querySelector('#hatchOverlay p').textContent = `${remaining} Taps Remaining`;
+        if (hatchTaps >= 3) {
+          hatched = true;
+          hatchOverlay.style.display = 'none';
+          ui.style.display = 'flex';
+          showToast('MOCHI HATCHED!');
+        }
+      });
+
+      canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        pet.targetX = (e.clientX - rect.left);
+      });
+
+      window.addEventListener('resize', () => {
+        W = window.innerWidth; H = window.innerHeight;
+        canvas.width = W; canvas.height = H;
+        horizonY = H * 0.6; groundY = H * 0.85;
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>
