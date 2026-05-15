@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>RampageMaster Engine</title>
+  <meta name="description" content="Launch page for the RampageMaster handheld city-rampage kaiju game." />
+  <style>
+    :root{
+      --bg:#03040a;
+      --panel:rgba(8,12,28,.86);
+      --line:rgba(132,205,255,.22);
+      --green:#39ff14;
+      --cyan:#00d4ff;
+      --pink:#ff4f7a;
+      --gold:#ffd76b;
+      --muted:rgba(235,245,255,.68);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 20% 18%,rgba(57,255,20,.16),transparent 26%),
+        radial-gradient(circle at 80% 12%,rgba(0,212,255,.13),transparent 28%),
+        radial-gradient(circle at 50% 90%,rgba(255,79,122,.12),transparent 30%),
+        linear-gradient(180deg,#050711,#010207 70%);
+      color:#eef7ff;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:28px 28px;
+      mask-image:radial-gradient(circle at center,#000 0 55%,transparent 82%);
+      pointer-events:none;
+    }
+    main{
+      position:relative;
+      width:min(920px,calc(100vw - 28px));
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:clamp(24px,5vw,54px);
+      background:linear-gradient(180deg,rgba(13,18,42,.92),rgba(4,6,16,.96));
+      box-shadow:0 28px 90px rgba(0,0,0,.72), inset 0 0 0 1px rgba(255,255,255,.04);
+      backdrop-filter:blur(16px);
+      text-align:center;
+    }
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      border:1px solid rgba(57,255,20,.35);
+      background:rgba(57,255,20,.08);
+      color:var(--green);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:18px;
+    }
+    h1{
+      font-size:clamp(42px,8vw,96px);
+      line-height:.85;
+      letter-spacing:.045em;
+      font-weight:1000;
+      text-transform:uppercase;
+      text-shadow:0 0 28px rgba(57,255,20,.48),0 0 52px rgba(0,212,255,.18);
+    }
+    .sub{
+      max-width:690px;
+      margin:20px auto 0;
+      color:var(--muted);
+      font-size:clamp(15px,2.2vw,19px);
+      line-height:1.5;
+      font-weight:700;
+    }
+    .actions{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:28px;
+    }
+    a.button{
+      display:inline-flex;
+      min-height:50px;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:13px 20px;
+      border-radius:15px;
+      border:1px solid rgba(57,255,20,.55);
+      background:linear-gradient(180deg,rgba(57,255,20,.22),rgba(57,255,20,.08));
+      color:#fff;
+      text-decoration:none;
+      font-weight:1000;
+      letter-spacing:.04em;
+      box-shadow:0 0 24px rgba(57,255,20,.18);
+    }
+    a.button.secondary{
+      border-color:var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--cyan);
+      box-shadow:none;
+    }
+    .ports{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;
+      margin-top:28px;
+      text-align:left;
+    }
+    .card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.045);
+      border-radius:16px;
+      padding:14px;
+    }
+    .card b{
+      display:block;
+      color:var(--gold);
+      font-size:12px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      margin-bottom:6px;
+    }
+    code{
+      display:block;
+      white-space:nowrap;
+      overflow:auto;
+      color:#fff;
+      background:rgba(0,0,0,.32);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:10px;
+      padding:9px 10px;
+      font-size:12px;
+    }
+    .note{
+      margin-top:18px;
+      color:rgba(235,245,255,.52);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .scanline{
+      pointer-events:none;
+      position:fixed;
+      inset:0;
+      background:linear-gradient(transparent 50%,rgba(0,0,0,.08) 50%);
+      background-size:100% 4px;
+      opacity:.38;
+      mix-blend-mode:multiply;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="badge">READY · ROOT INDEX ACTIVE</div>
+    <h1>Rampage<br>Master</h1>
+    <p class="sub">The repository root is no longer a blank directory landing page. Launch the current playable build below.</p>
+    <div class="actions">
+      <a class="button" href="src/index.html">▶ Launch Game</a>
+      <a class="button secondary" href="./src/">Open /src/</a>
+    </div>
+    <section class="ports" aria-label="Local startup links and ports">
+      <div class="card"><b>Python</b><code>http://localhost:8000/src/index.html</code></div>
+      <div class="card"><b>Live Server</b><code>http://127.0.0.1:5500/src/index.html</code></div>
+      <div class="card"><b>Node Serve</b><code>http://localhost:3000/src/index.html</code></div>
+      <div class="card"><b>GitHub Pages</b><code>/rampagemaster-engine/src/</code></div>
+    </section>
+    <p class="note">For GitHub Pages, set Pages to deploy from <strong>master</strong> and <strong>/root</strong>, then open the repository Pages URL.</p>
+  </main>
+  <div class="scanline"></div>
+</body>
+</html>
