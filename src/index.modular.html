@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>RampageMaster Modular Engine Bridge</title>
+  <title>RampageMaster High Resolution Modular Bridge</title>
   <style>
     :root {
       --panel: rgba(6, 8, 20, 0.92);
@@ -12,8 +12,10 @@
       --blue: #00d4ff;
       --pink: #ff4f7a;
       --gold: #ffd76b;
+      --themeSky: #17244c;
+      --themeMid: #081426;
       color-scheme: dark;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
       background: #02030a;
       color: #eef7ff;
     }
@@ -24,7 +26,7 @@
       margin: 0;
       min-height: 100vh;
       overflow: hidden;
-      background: radial-gradient(circle at 50% 20%, #18244f, #02030a 68%);
+      background: radial-gradient(circle at 50% 20%, var(--themeSky), #02030a 68%);
     }
 
     canvas {
@@ -70,8 +72,8 @@
 
     p {
       margin: 8px 0 0;
-      max-width: 520px;
-      color: rgba(238,247,255,.7);
+      max-width: 560px;
+      color: rgba(238,247,255,.72);
       font-size: 13px;
       line-height: 1.45;
     }
@@ -81,6 +83,7 @@
       gap: 8px;
       flex-wrap: wrap;
       justify-content: flex-end;
+      max-width: min(620px, 54vw);
     }
 
     button {
@@ -106,8 +109,8 @@
       right: 14px;
       bottom: 14px;
       z-index: 10;
-      width: min(480px, calc(100vw - 28px));
-      max-height: min(360px, 45vh);
+      width: min(520px, calc(100vw - 28px));
+      max-height: min(420px, 48vh);
       overflow: auto;
       white-space: pre-wrap;
       font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -119,26 +122,19 @@
       left: 14px;
       bottom: 14px;
       z-index: 10;
-      max-width: min(520px, calc(100vw - 28px));
+      max-width: min(560px, calc(100vw - 28px));
       color: rgba(238,247,255,.75);
       font-size: 12px;
       line-height: 1.4;
     }
 
-    code {
-      color: var(--gold);
-    }
+    code { color: var(--gold); }
 
     @media (max-width: 720px) {
-      .hud {
-        flex-direction: column;
-      }
-      .controls {
-        justify-content: flex-start;
-      }
-      .debug {
-        display: none;
-      }
+      .hud { flex-direction: column; }
+      .controls { justify-content: flex-start; max-width: calc(100vw - 28px); }
+      .debug { display: none; }
+      .note { display: none; }
     }
   </style>
 </head>
@@ -147,27 +143,31 @@
 
   <header class="hud">
     <section class="card">
-      <h1>RampageMaster<br />Modular Bridge</h1>
+      <h1>RampageMaster<br />High-Res Bridge</h1>
       <p>
-        This launcher lives in <code>src/</code> and calls <code>src/animation/index.js</code> directly.
-        It is the safe bridge between the legacy single-file prototype and the extracted modular animation engine.
+        This launcher connects the better module lanes: v7.6.3 motion, v7.1 proportions,
+        v6.1/v5 city intelligence, v4 architecture skins, high-detail citizens, theme packs,
+        crumbling/regeneration, and the expanded currency ladder.
       </p>
     </section>
 
-    <nav class="card controls" aria-label="Motion intent controls">
+    <nav class="card controls" aria-label="High-resolution module controls">
       <button class="is-active" data-rampage-intent="rampage">Rampage</button>
       <button data-rampage-intent="patrol">Patrol</button>
       <button data-rampage-intent="idle">Idle</button>
       <button data-rampage-intent="care">Care</button>
+      <button data-rampage-intent="theme">Theme</button>
+      <button data-rampage-intent="convert">Convert</button>
+      <button data-rampage-intent="debug">Debug</button>
     </nav>
   </header>
 
   <aside class="card note">
-    Click or tap the city to set a manual target. The rendered kaiju position, gait, pose, target choice,
-    and biomechanical values are driven through the modular engine API.
+    Click or tap the city to set a manual target. Theme cycles through the high-resolution city packs.
+    Convert moves Bones up the Bones → Opal ladder. Debug toggles city overlay.
   </aside>
 
-  <pre class="card debug" data-rampage-debug>Loading modular animation engine...</pre>
+  <pre class="card debug" data-rampage-debug>Loading high-resolution modular engine...</pre>
 
   <script type="module" src="./app.js"></script>
 </body>
