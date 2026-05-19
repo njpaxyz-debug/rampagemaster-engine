@@ -1,226 +1,52 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>RampageMaster High Resolution Gameplay</title>
-  <style>
-    :root {
-      --panel: rgba(6, 8, 20, 0.92);
-      --line: rgba(135, 205, 255, 0.2);
-      --green: #39ff14;
-      --blue: #00d4ff;
-      --pink: #ff4f7a;
-      --gold: #ffd76b;
-      --themeSky: #17244c;
-      --themeMid: #081426;
-      color-scheme: dark;
-      font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
-      background: #02030a;
-      color: #eef7ff;
-    }
-
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      overflow: hidden;
-      background: radial-gradient(circle at 50% 20%, var(--themeSky), #02030a 68%);
-    }
-
-    canvas {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      display: block;
-      image-rendering: pixelated;
-      cursor: crosshair;
-    }
-
-    .hud {
-      position: fixed;
-      left: 14px;
-      right: 14px;
-      top: 14px;
-      z-index: 10;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-
-    .card {
-      pointer-events: auto;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--panel);
-      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
-      backdrop-filter: blur(12px);
-      padding: 12px 14px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(18px, 4vw, 34px);
-      letter-spacing: 0.06em;
-      line-height: 0.95;
-      text-transform: uppercase;
-      text-shadow: 0 0 20px rgba(57,255,20,.5);
-    }
-
-    p {
-      margin: 8px 0 0;
-      max-width: 560px;
-      color: rgba(238,247,255,.72);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .controls {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      max-width: min(620px, 54vw);
-    }
-
-    button {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      color: #eef7ff;
-      padding: 9px 12px;
-      font: inherit;
-      font-weight: 900;
-      letter-spacing: .04em;
-      cursor: pointer;
-    }
-
-    button.is-active {
-      color: var(--green);
-      border-color: rgba(57,255,20,.7);
-      box-shadow: 0 0 20px rgba(57,255,20,.2);
-    }
-
-    .gameHud {
-      position: fixed;
-      left: 14px;
-      bottom: 14px;
-      z-index: 11;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(96px, auto));
-      gap: 8px;
-      max-width: min(720px, calc(100vw - 28px));
-    }
-
-    .gameHud div {
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 14px;
-      background: rgba(0,0,0,.48);
-      padding: 8px 10px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-    }
-
-    .gameHud b, .gameHud span {
-      display: block;
-      white-space: nowrap;
-    }
-
-    .gameHud b {
-      color: var(--gold);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .gameHud span {
-      margin-top: 2px;
-      font-size: 13px;
-      color: #eef7ff;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      z-index: 30;
-      transform: translate(-50%, -50%) scale(.94);
-      border: 1px solid rgba(255,215,107,.8);
-      border-radius: 999px;
-      background: rgba(0,0,0,.78);
-      color: var(--gold);
-      padding: 13px 20px;
-      font-size: clamp(16px, 4vw, 32px);
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .16s ease, transform .16s ease;
-      box-shadow: 0 0 36px rgba(255,215,107,.24);
-    }
-
-    .toast.is-visible {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .debug {
-      position: fixed;
-      right: 14px;
-      bottom: 14px;
-      z-index: 10;
-      width: min(520px, calc(100vw - 28px));
-      max-height: min(420px, 48vh);
-      overflow: auto;
-      white-space: pre-wrap;
-      font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      color: rgba(238,247,255,.78);
-    }
-
-    code { color: var(--gold); }
-
-    @media (max-width: 760px) {
-      .hud { flex-direction: column; }
-      .controls { justify-content: flex-start; max-width: calc(100vw - 28px); }
-      .debug { display: none; }
-      .gameHud { grid-template-columns: repeat(2, minmax(120px, auto)); bottom: 8px; left: 8px; right: 8px; }
-      .gameHud div { padding: 6px 8px; }
-      .gameHud span { font-size: 11px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>RampageMaster Stable Gameplay</title>
+<style>
+:root{--gold:#ffd76b;--green:#39ff14;--blue:#00d4ff;--pink:#ff4f7a;--panel:rgba(5,8,18,.78);font-family:Georgia,"Iowan Old Style",serif;color:#eef7ff;background:#02030a}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#02030a}canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block;cursor:crosshair}.top{position:fixed;left:12px;right:12px;top:12px;z-index:5;display:flex;gap:10px;align-items:flex-start;justify-content:space-between;pointer-events:none}.card{pointer-events:auto;background:var(--panel);border:1px solid rgba(135,205,255,.22);border-radius:18px;padding:10px 12px;box-shadow:0 16px 42px rgba(0,0,0,.38);backdrop-filter:blur(10px)}h1{margin:0;font-size:clamp(19px,4vw,36px);line-height:.92;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);text-shadow:0 0 18px rgba(255,215,107,.28)}p{margin:7px 0 0;max-width:540px;font-size:12px;line-height:1.35;color:rgba(238,247,255,.72)}nav{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;max-width:min(650px,55vw)}button{border:1px solid rgba(135,205,255,.25);border-radius:999px;background:rgba(255,255,255,.08);color:#eef7ff;padding:8px 11px;font:inherit;font-weight:900;cursor:pointer}button.on{color:var(--green);border-color:rgba(57,255,20,.72);box-shadow:0 0 18px rgba(57,255,20,.18)}.hud{position:fixed;left:12px;bottom:12px;z-index:6;display:grid;grid-template-columns:repeat(3,minmax(96px,auto));gap:8px;max-width:calc(100vw - 24px)}.hud div{background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:8px 10px}.hud b,.hud span{display:block;white-space:nowrap}.hud b{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em}.hud span{font-size:13px;margin-top:2px}.toast{position:fixed;left:50%;top:50%;z-index:10;transform:translate(-50%,-50%) scale(.94);opacity:0;pointer-events:none;border:1px solid rgba(255,215,107,.8);border-radius:999px;background:rgba(0,0,0,.78);color:var(--gold);padding:12px 20px;font-size:clamp(16px,4vw,30px);font-weight:900;text-transform:uppercase;letter-spacing:.08em;transition:.15s}.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}.debug{position:fixed;right:12px;bottom:12px;z-index:6;width:min(460px,calc(100vw - 24px));max-height:min(360px,44vh);overflow:auto;white-space:pre-wrap;font:11px/1.35 ui-monospace,monospace;color:rgba(238,247,255,.78)}@media(max-width:760px){.top{flex-direction:column}.card nav,nav{max-width:calc(100vw - 24px);justify-content:flex-start}.debug{display:none}.hud{grid-template-columns:repeat(2,minmax(120px,auto));left:8px;bottom:8px}.hud div{padding:6px 8px}.hud span{font-size:11px}}
+</style>
 </head>
 <body>
-  <canvas data-rampage-canvas></canvas>
-
-  <header class="hud">
-    <section class="card">
-      <h1>RampageMaster<br />High-Res Gameplay</h1>
-      <p>
-        Default gameplay path. Rampage now auto-smashes buildings, triggers panic,
-        pays Bones on collapse, updates combo, cycles high-resolution city themes,
-        and uses the extracted v7.6.3 motion engine.
-      </p>
-    </section>
-
-    <nav class="card controls" aria-label="High-resolution gameplay controls">
-      <button class="is-active" data-rampage-intent="rampage">Rampage</button>
-      <button data-rampage-intent="patrol">Patrol</button>
-      <button data-rampage-intent="idle">Idle</button>
-      <button data-rampage-intent="care">Care</button>
-      <button data-rampage-intent="theme">Theme</button>
-      <button data-rampage-intent="convert">Convert</button>
-      <button data-rampage-intent="debug">Debug</button>
-    </nav>
-  </header>
-
-  <section class="gameHud" data-rampage-hud></section>
-  <div class="toast" data-rampage-toast>Rampage</div>
-  <pre class="card debug" data-rampage-debug>Loading high-resolution gameplay...</pre>
-
-  <script type="module" src="./app.js"></script>
+<canvas id="game"></canvas>
+<header class="top">
+<section class="card"><h1>RampageMaster<br>Stable Gameplay</h1><p>Emergency-stable single-file build. No imports. Rampage damages buildings, raises panic, pays Bones, cycles themes, and keeps the page alive while modular wiring is repaired.</p></section>
+<nav class="card" aria-label="controls"><button class="on" data-mode="rampage">Rampage</button><button data-mode="patrol">Patrol</button><button data-mode="idle">Idle</button><button data-action="theme">Theme</button><button data-action="convert">Convert</button><button data-action="debug">Debug</button></nav>
+</header>
+<section class="hud" id="hud"></section>
+<div class="toast" id="toast">Ready</div>
+<pre class="card debug" id="debug"></pre>
+<script>
+(function(){
+'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),hud=document.getElementById('hud'),toast=document.getElementById('toast'),debug=document.getElementById('debug');
+const themes=[
+{name:'Metro Glass Prime',sky:['#17244c','#081426','#02030a'],building:['#101828','#17223a'],trim:'#00d4ff',win:'#9ee8ff',ground:'#05060a'},
+{name:'Brickworks Row',sky:['#322244','#151020','#080306'],building:['#28150e','#4c2418'],trim:'#a04d2c',win:'#ffd76b',ground:'#0c0705'},
+{name:'Harbor Industrial',sky:['#07101d','#263449','#050607'],building:['#151923','#2b3037'],trim:'#9ca3af',win:'#cbd5e1',ground:'#07090a'},
+{name:'Royal Stone Quarter',sky:['#26105c','#3a1d58','#07050b'],building:['#232323','#3b3530'],trim:'#a8a29e',win:'#e7e5e4',ground:'#08070c'},
+{name:'Toxic Garden District',sky:['#163820','#07180e','#030603'],building:['#18231b','#263529'],trim:'#39ff14',win:'#caffbf',ground:'#050905'}
+];
+let themeIndex=0,theme=themes[0],buildings=[],citizens=[],mode='rampage',debugOn=true,last=performance.now(),score=0,bones=320,opal=1,combo=0,comboTimer=0,panic=0,collapses=0,rebuilds=0,shake=0,flash=0,kaiju={x:180,y:0,vx:70,face:1,step:0},toastAt=0,hitClock=0;
+function rand(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return()=>((h=Math.imul(h^(h>>>15),2246822507))>>>0)/4294967296}
+function resize(){const r=Math.min(devicePixelRatio||1,2);canvas.width=Math.max(320,innerWidth*r);canvas.height=Math.max(320,innerHeight*r);kaiju.y=ground();makeCity()}function ground(){return Math.round(canvas.height*.74)}
+function makeCity(){const random=rand(theme.name+canvas.width);buildings=[];citizens=[];let x=-40,i=0;while(x<canvas.width+80){const w=56+random()*95,h=125+random()*230,max=5+Math.floor(random()*8);buildings.push({id:'b'+i,x,y:ground()-h,w,h,hp:max,max,seed:random(),state:'intact',fire:0,dead:0,rebuild:0,flash:0,points:Math.round(14+h/16+w/15)});x+=w+random()*10;i++}for(let c=0;c<Math.max(10,buildings.length*.8);c++)citizens.push({x:random()*canvas.width,fear:random()*.35,rare:random()>.86,value:random()>.86?18:5})}
+function show(msg){toast.textContent=msg;toast.classList.add('show');toastAt=performance.now()}
+function hitBuilding(x,amt,label){let best=null,dist=99999;for(const b of buildings){if(b.hp<=0)continue;const d=Math.abs((b.x+b.w/2)-x);if(d<dist){best=b;dist=d}}if(!best||dist>160)return;best.hp=Math.max(0,best.hp-amt);best.flash=1;panic=Math.min(100,panic+amt*4.8);shake=Math.min(1.6,shake+.22+amt*.08);flash=Math.min(1,flash+.2);combo++;comboTimer=2.1;if(best.hp<=0&&!best.dead){best.dead=performance.now();collapses++;const gain=Math.round(best.points*(1+combo*.08));bones+=gain;score+=gain;show('Collapse +'+gain+' ◆ · '+combo+'x')}else if(performance.now()-toastAt>420)show(label+' · '+damageName(best)+' · '+combo+'x')}
+function damageName(b){const d=1-b.hp/b.max;return b.hp<=0?'collapsed':d>.8?'collapsing':d>.5?'critical':d>.25?'cracked':'hit'}
+function update(dt){comboTimer-=dt;if(comboTimer<=0)combo=0;panic=Math.max(0,panic-dt*4);if(performance.now()-toastAt>1250)toast.classList.remove('show');kaiju.step+=dt*(mode==='idle'?.45:mode==='patrol'?1.1:1.8);const speed=mode==='idle'?20:mode==='patrol'?58:90;kaiju.x+=kaiju.face*speed*dt;if(kaiju.x>canvas.width-85){kaiju.x=canvas.width-85;kaiju.face=-1}if(kaiju.x<85){kaiju.x=85;kaiju.face=1}hitClock+=dt;if(mode==='rampage'&&hitClock>.14){hitClock=0;hitBuilding(kaiju.x+kaiju.face*50,1.45,'Claw')}for(const b of buildings){b.flash=Math.max(0,b.flash-dt*4);const d=1-b.hp/b.max;b.state=damageName(b);if(d>.5&&b.hp>0)b.fire+=dt;if(b.dead){const e=performance.now()-b.dead;if(e>22000)b.rebuild=Math.min(1,(e-22000)/13000);if(b.rebuild>=1){b.hp=b.max;b.dead=0;b.rebuild=0;b.fire=0;rebuilds++}}}for(const c of citizens){const near=Math.max(0,1-Math.abs(c.x-kaiju.x)/340);c.fear=Math.max(0,Math.min(1,c.fear+near*dt*1.4-dt*.12));c.x+=(c.x<kaiju.x?-1:1)*(20+c.fear*80)*dt;if(c.x<-20)c.x=canvas.width+20;if(c.x>canvas.width+20)c.x=-20}}
+function draw(){const g=ground(),grad=ctx.createLinearGradient(0,0,0,canvas.height);grad.addColorStop(0,theme.sky[0]);grad.addColorStop(.58,theme.sky[1]);grad.addColorStop(1,theme.sky[2]);ctx.fillStyle=grad;ctx.fillRect(0,0,canvas.width,canvas.height);for(let i=0;i<72;i++){ctx.fillStyle='rgba(255,255,255,.28)';ctx.fillRect((i*97+23)%canvas.width,20+(i*53)%Math.max(80,g*.55),i%4?1:2,i%5?1:2)}ctx.save();if(shake>0){ctx.translate((Math.random()-.5)*shake*18,(Math.random()-.5)*shake*10);shake=Math.max(0,shake-.04)}for(const b of buildings)drawBuilding(b,g);ctx.fillStyle=theme.ground;ctx.fillRect(0,g,canvas.width,canvas.height-g);ctx.strokeStyle='rgba(255,215,107,.26)';ctx.setLineDash([36,24]);ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,g+24);ctx.lineTo(canvas.width,g+24);ctx.stroke();ctx.setLineDash([]);drawCitizens(g);drawKaiju(g);if(panic>22)drawScans(g);ctx.restore();if(flash>0){ctx.fillStyle='rgba(255,215,107,'+(flash*.16)+')';ctx.fillRect(0,0,canvas.width,canvas.height);flash=Math.max(0,flash-.04)}}
+function drawBuilding(b,g){if(b.hp<=0&&b.rebuild===0){ctx.fillStyle='#18130f';ctx.beginPath();ctx.moveTo(b.x,g);for(let i=0;i<=8;i++)ctx.lineTo(b.x+b.w*i/8,g-8-((i*17+b.seed*40)%28));ctx.lineTo(b.x+b.w,g);ctx.fill();return}const h=b.rebuild>0?b.h*b.rebuild:b.h,y=g-h,d=1-b.hp/b.max;ctx.fillStyle=theme.building[Number(b.id.slice(1))%2];ctx.fillRect(b.x,y,b.w,h);if(b.flash){ctx.fillStyle='rgba(255,215,107,'+(.34*b.flash)+')';ctx.fillRect(b.x,y,b.w,h)}ctx.fillStyle=theme.trim;ctx.globalAlpha=.75;ctx.fillRect(b.x-1,y,b.w+2,4);ctx.globalAlpha=1;const cols=Math.max(2,Math.floor(b.w/22)),rows=Math.max(2,Math.floor(h/28));for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const broken=d>.25&&Math.sin(r*5.7+c*3.1+b.seed*10)>.75-d*.42;ctx.fillStyle=broken?'rgba(0,0,0,.75)':theme.win;ctx.globalAlpha=broken?1:.32+Math.abs(Math.sin(r+c+b.seed))*.35;ctx.fillRect(b.x+8+c*((b.w-16)/cols),y+18+r*((h-34)/rows),Math.max(6,b.w/cols-10),Math.max(8,h/rows-12));ctx.globalAlpha=1}if(d>.22){ctx.strokeStyle='rgba(0,0,0,.82)';ctx.lineWidth=1.8;for(let i=0;i<Math.floor(d*9);i++){const sx=b.x+10+((i*37+b.seed*80)%Math.max(12,b.w-20)),sy=y+18+((i*51+b.seed*90)%Math.max(20,h-42));ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+Math.sin(i)*20,sy+18+i*2);ctx.lineTo(sx+Math.cos(i*1.7)*10,sy+36+i);ctx.stroke()}}if(d>.55){for(let i=0;i<Math.max(2,Math.floor(b.w/28));i++){const x=b.x+12+i*(b.w/Math.max(2,Math.floor(b.w/28))),fh=18+Math.sin(performance.now()*.008+i)*8+d*22;const gr=ctx.createLinearGradient(x,y+h-fh,x,y+h);gr.addColorStop(0,'rgba(255,80,0,0)');gr.addColorStop(.55,'#ff6e00');gr.addColorStop(1,'#ffd76b');ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(x,y+h-4,8,fh,0,0,Math.PI*2);ctx.fill()}}}
+function drawCitizens(g){for(const c of citizens){ctx.fillStyle=c.rare?'#b06cff':'#dbe8ff';ctx.globalAlpha=.55+c.fear*.45;ctx.beginPath();ctx.arc(c.x,g-18,c.rare?5:3,0,Math.PI*2);ctx.fill();ctx.fillRect(c.x-2,g-14,4,12);if(c.fear>.7){ctx.fillStyle='#ff4f7a';ctx.fillRect(c.x+5,g-30,2,8)}ctx.globalAlpha=1}}
+function drawKaiju(g){const bob=Math.sin(kaiju.step*Math.PI*2)*7;ctx.save();ctx.translate(kaiju.x,g+bob);ctx.scale(kaiju.face,1);ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(0,10,70,15,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#123b1f';ctx.lineWidth=17;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(40,-72);ctx.quadraticCurveTo(105,-92,140,-40);ctx.stroke();ctx.strokeStyle='#39ff14';for(const s of[-1,1]){ctx.beginPath();ctx.moveTo(s*24,-58);ctx.lineTo(s*(34+Math.sin(kaiju.step*Math.PI*2+s)*18),-10);ctx.stroke()}ctx.fillStyle='#123b1f';ctx.beginPath();ctx.ellipse(0,-86,62,80,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#39ff14';ctx.beginPath();ctx.ellipse(0,-90,36,50,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#123b1f';ctx.beginPath();ctx.ellipse(18,-168,42,31,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffd76b';ctx.shadowColor='#ffd76b';ctx.shadowBlur=15;ctx.beginPath();ctx.arc(5,-174,7,0,Math.PI*2);ctx.arc(30,-174,7,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#07120a';ctx.lineWidth=4;ctx.beginPath();ctx.arc(24,-157,13,.15,Math.PI-.1);ctx.stroke();ctx.fillStyle='#ffd76b';for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(-10,-140+i*14);ctx.lineTo(-32,-154+i*14);ctx.lineTo(0,-135+i*14);ctx.fill()}ctx.restore()}
+function drawScans(g){ctx.save();ctx.globalAlpha=Math.min(.5,panic/180);ctx.strokeStyle='#00d4ff';ctx.lineWidth=1.5;for(let i=0;i<3;i++){const x=(performance.now()*.025+i*canvas.width*.35)%canvas.width;ctx.beginPath();ctx.moveTo(x,40+i*20);ctx.lineTo(x+Math.sin(performance.now()*.002+i)*80,g);ctx.stroke()}ctx.restore()}
+function renderHud(){hud.innerHTML='<div><b>Score</b><span>'+score+'</span></div><div><b>Wallet</b><span>◆ '+bones+' Bones · ◇ '+opal+' Opal</span></div><div><b>Combo</b><span>'+combo+'x</span></div><div><b>Panic</b><span>'+Math.round(panic)+'%</span></div><div><b>Collapses</b><span>'+collapses+'</span></div><div><b>Theme</b><span>'+theme.name+'</span></div>';if(debugOn)debug.textContent=JSON.stringify({mode,score,bones,opal,combo,panic:Math.round(panic),collapses,rebuilds,theme:theme.name,buildings:buildings.length,citizens:citizens.length,path:'standalone emergency stable src/index.html'},null,2);else debug.textContent=''}
+function frame(now){const dt=Math.min(.05,(now-last)/1000||.016);last=now;update(dt);draw();renderHud();requestAnimationFrame(frame)}
+canvas.addEventListener('pointerdown',e=>{const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*canvas.width;kaiju.x=x;mode='rampage';document.querySelectorAll('button[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));hitBuilding(x,3.5,'Direct hit')});
+document.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.mode){mode=b.dataset.mode;document.querySelectorAll('button[data-mode]').forEach(x=>x.classList.toggle('on',x===b));show(mode+' mode')}if(b.dataset.action==='theme'){themeIndex=(themeIndex+1)%themes.length;theme=themes[themeIndex];makeCity();show('Theme: '+theme.name)}if(b.dataset.action==='convert'){if(bones>=200){bones-=200;opal++;show('Converted Bones → Opal')}else show('Need 200 Bones')}if(b.dataset.action==='debug'){debugOn=!debugOn;show(debugOn?'Debug on':'Debug off')}}));
+window.addEventListener('resize',resize);resize();show('Stable build loaded');requestAnimationFrame(frame);window.RampageMaster={smash:()=>hitBuilding(kaiju.x,4,'Manual smash'),get state(){return{mode,score,bones,opal,panic,collapses,theme:theme.name}}};
+})();
+</script>
 </body>
 </html>
