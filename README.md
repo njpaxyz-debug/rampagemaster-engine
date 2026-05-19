@@ -9,47 +9,105 @@ This repository contains the foundational elements for the `RampageMaster` proje
 ```
 rampagemaster-engine/
 ├── src/
-│   └── index.html             # The main single-file HTML prototype for RampageMaster
-└── docs/
-    ├── MASTER_INDEX.md        # Master compile and best-version arrangement document
-    └── OPTIMIZATION_SCAFFOLD.md # Prioritized scaffold for performance and gameplay engine optimization
-└── README.md                # This document
+│   ├── index.html                         # The main single-file HTML prototype for RampageMaster
+│   └── animation/
+│       └── index.js                       # Stable animation-engine import path
+├── drive-extracts/
+│   └── animation-engine/
+│       ├── MANIFEST.md                    # Drive extraction manifest and source boundaries
+│       └── rampagemaster_motion_biomech_engine_v7_6_3.extracted.js
+│                                           # Extracted motion/biomechanics engine module
+├── tests/
+│   └── animation-engine-smoke.html        # Browser smoke test for the extracted engine
+├── docs/
+│   ├── MASTER_INDEX.md                    # Master compile and best-version arrangement document
+│   └── OPTIMIZATION_SCAFFOLD.md           # Prioritized scaffold for performance and gameplay optimization
+└── README.md
 ```
 
 ## Getting Started
 
-To run the `RampageMaster` prototype, simply open the `src/index.html` file in any modern web browser. No special server setup is required as it is a self-contained HTML file.
+To run the current single-file `RampageMaster` prototype, open `src/index.html` in any modern browser. No special server setup is required for the prototype because it is self-contained.
 
 ### Prerequisites
 
-*   A modern web browser (e.g., Chrome, Firefox, Edge)
+* A modern browser such as Chrome, Firefox, Edge, or Safari.
 
 ### Running the Prototype
 
-1.  Navigate to the `src/` directory.
-2.  Open `index.html` in your preferred web browser.
+1. Navigate to the `src/` directory.
+2. Open `index.html` in your preferred browser.
+
+## Animation Engine Extraction
+
+The Drive audit identified `rampagemaster_biomech_generator_v7_6_3.html` as the most direct animation-engine source. The repo now contains a cleaned extraction of that motion/biomechanics layer at:
+
+```js
+src/animation/index.js
+```
+
+Gameplay code should import from this stable path rather than importing directly from `drive-extracts/`. The current stable entry point re-exports the extracted v7.6.3 module:
+
+```js
+import MotionEngine from './animation/index.js';
+```
+
+The extracted module focuses on the animation-engine responsibilities only:
+
+* seeded kaiju motion profiles
+* taxonomy-to-locomotion mapping
+* biomechanical derived stats
+* gait/pose/limb phase state
+* route-graph target selection
+* rampage/care/idle intent handling
+* city-aware movement state updates
+
+It intentionally does **not** include the entire original giant HTML shell, UI, mall, bank, arcade, save system, or city renderer. Those remain separate gameplay/application concerns.
+
+## Animation Smoke Test
+
+A standalone browser smoke test is available at:
+
+```text
+tests/animation-engine-smoke.html
+```
+
+Because the smoke test imports ES modules, run it through a small local static server from the repository root:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000/tests/animation-engine-smoke.html
+```
+
+The test creates a seeded Giga-Rex motion profile, advances it through the extracted motion engine, renders a simplified kaiju on a city strip, and prints live debug state including current gait, pose, target, limbs, and derived biomechanical values.
 
 ## Key Features and Gameplay Mechanics
 
 The `RampageMaster` prototype incorporates several core gameplay elements:
 
-*   **Core Pet Loop:** Engage with your Kaiju through hatching, naming, feeding, playing, cleaning, resting, training, and exploration. Monitor key stats like health, food, joy, energy, and cleanliness, alongside progression metrics such as XP, level, bond, mood, and evolution stages.
-*   **Egg and Randomizer:** A unique egg selection process in the Nest, requiring three taps to hatch. The timing and coordinates of these taps feed a hidden seeded randomizer, which generates the Kaiju's DNA, influencing its physical traits and personality.
-*   **City/Rampage Loop:** Experience a dynamic city environment where your Kaiju can rampage, damaging buildings that later regenerate. Citizens react to your Kaiju's presence, panicking and escaping. Rampaging earns 
-bones (currency) but consumes energy and requires cleanliness.
-*   **Economic Framework (Mall, Bank, Arcade):** The Mall serves as a hub for acquiring consumables, upgrades, and cosmetics. The Bank facilitates currency conversion (bones → opal → quartz → fossils → oil). The Arcade offers engaging microgames with streak rewards, contributing to the in-game economy.
-*   **DNA / Debug Access:** Access detailed DNA information in a dedicated panel, allowing for deeper understanding of your Kaiju's generated traits. The game also supports exporting and importing save JSON for checkpoints and debugging.
+* **Core Pet Loop:** Engage with your Kaiju through hatching, naming, feeding, playing, cleaning, resting, training, and exploration. Monitor health, food, joy, energy, cleanliness, XP, level, bond, mood, and evolution stages.
+* **Egg and Randomizer:** A unique egg selection process in the Nest uses tap timing and coordinates as a hidden seeded randomizer, shaping DNA, traits, personality, and city-rampage behavior.
+* **City/Rampage Loop:** A dynamic city environment allows rampaging, building damage, regeneration, citizens escaping, and bone-currency rewards.
+* **Economic Framework:** The Mall, Bank, and Arcade support consumables, upgrades, cosmetics, conversion paths, microgames, and streak rewards.
+* **DNA / Debug Access:** Dedicated DNA/debug information supports export/import save checkpoints and deeper inspection of generated traits.
+* **Animation / Biomechanics Layer:** A modular motion layer now exists independently from the single-file shell, making future integration safer and preventing more overlapping animation logic.
 
 ## Development Roadmap and Optimization
 
-For a detailed understanding of the project's future development and optimization strategies, please refer to the following documents:
+For detailed planning, refer to:
 
-*   **`docs/MASTER_INDEX.md`**: Provides a comprehensive audit and arrangement of the project's master compile and best-version sources.
-*   **`docs/OPTIMIZATION_SCAFFOLD.md`**: Outlines a prioritized scaffold for enhancing gameplay engine details and optimizing performance, including strategies for CharacterEngine integration, Canvas rendering optimization, and modular architecture.
+* `docs/MASTER_INDEX.md` — master compile and best-version source arrangement.
+* `docs/OPTIMIZATION_SCAFFOLD.md` — prioritized scaffold for gameplay, performance, CharacterEngine integration, canvas rendering, and modular architecture.
+* `drive-extracts/animation-engine/MANIFEST.md` — current Drive extraction source list and exact boundaries.
 
-## Contributing
+## Current Integration Rule
 
-Contributions are welcome! Please refer to the `docs/MASTER_INDEX.md` and `docs/OPTIMIZATION_SCAFFOLD.md` for current development priorities and architectural guidelines.
+Use `src/animation/index.js` as the public animation API. Treat everything inside `drive-extracts/` as provenance/archive material until the engine is fully normalized into permanent `src/` modules.
 
 ## License
 
