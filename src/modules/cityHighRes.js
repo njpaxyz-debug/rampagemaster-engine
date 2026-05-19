@@ -22,14 +22,15 @@ export function createHighResCity(options = {}) {
     const h = Math.round((120 + random() * 210) * (0.82 + density * 0.12));
     const y = groundY - h;
     const material = index % 2 ? theme.palette.buildingAlt : theme.palette.building;
+    const max = Math.round(5 + random() * 7 + density);
     buildings.push({
       id: `b${index}`,
       x,
       y,
       w,
       h,
-      hp: Math.round(4 + random() * 6 + density),
-      max: Math.round(5 + random() * 7 + density),
+      hp: max,
+      max,
       material,
       trim: theme.palette.trim,
       window: theme.palette.window,
@@ -39,6 +40,7 @@ export function createHighResCity(options = {}) {
       fire: 0,
       deadAt: 0,
       rebuild: 0,
+      hitFlash: 0,
       points: Math.round(12 + h / 18 + w / 16)
     });
     x += w + Math.round(random() * 10);
@@ -69,7 +71,9 @@ export function createHighResCity(options = {}) {
     geography: options.geography || 'urban basin',
     weather: options.weather || 'clear',
     timezoneOffset: options.timezoneOffset ?? 0,
-    rebuiltCount: 0
+    rebuiltCount: 0,
+    collapseCount: 0,
+    lastCollapse: null
   };
 }
 
@@ -89,13 +93,18 @@ export function updateHighResCity(city, dt, kaijuState = {}) {
 
   const now = performance.now();
   for (const building of city.buildings) {
+    building.hitFlash = Math.max(0, building.hitFlash - dt * 4);
     const damage = 1 - building.hp / building.max;
-    building.damageState = damage > 0.8 ? 'collapsing' : damage > 0.5 ? 'critical' : damage > 0.25 ? 'cracked' : 'intact';
+    building.damageState = building.hp <= 0 ? 'collapsed' : damage > 0.8 ? 'collapsing' : damage > 0.5 ? 'critical' : damage > 0.25 ? 'cracked' : 'intact';
     if (building.damageState === 'critical' || building.damageState === 'collapsing') building.fire += dt;
-    if (building.hp <= 0 && !building.deadAt) building.deadAt = now;
+    if (building.hp <= 0 && !building.deadAt) {
+      building.deadAt = now;
+      city.collapseCount += 1;
+      city.lastCollapse = building.id;
+    }
     if (building.deadAt) {
       const elapsed = now - building.deadAt;
-      if (elapsed > 28000) building.rebuild = clamp((elapsed - 28000) / 16000, 0, 1);
+      if (elapsed > 22000) building.rebuild = clamp((elapsed - 22000) / 13000, 0, 1);
       if (building.rebuild >= 1) {
         building.hp = building.max;
         building.deadAt = 0;
@@ -120,9 +129,10 @@ export function damageNearestBuilding(city, x, amount = 1) {
       bestDistance = distance;
     }
   }
-  if (!best || bestDistance > 120) return null;
+  if (!best || bestDistance > 150) return null;
   best.hp = clamp(best.hp - amount, 0, best.max);
-  city.panic = clamp(city.panic + amount * 3.5, 0, 100);
+  best.hitFlash = 1;
+  city.panic = clamp(city.panic + amount * 4.5, 0, 100);
   return best;
 }
 
@@ -151,10 +161,12 @@ export function drawHighResCity(ctx, city, options = {}) {
   drawGround(ctx, city);
   drawCitizens(ctx, city);
 
+  if (city.militaryPresence > 20) drawMilitaryScan(ctx, city);
+
   if (options.debugOverlay) {
     ctx.fillStyle = 'rgba(255,255,255,.7)';
     ctx.font = '12px ui-monospace, monospace';
-    ctx.fillText(`${theme.name} · panic ${Math.round(city.panic)} · rebuild ${city.rebuiltCount}`, 14, height - 18);
+    ctx.fillText(`${theme.name} · panic ${Math.round(city.panic)} · collapses ${city.collapseCount} · rebuild ${city.rebuiltCount}`, 14, height - 18);
   }
 }
 
@@ -170,6 +182,11 @@ function drawBuilding(ctx, city, building) {
   const damage = 1 - building.hp / building.max;
   ctx.fillStyle = building.rebuild > 0 ? 'rgba(30,38,56,.72)' : building.material;
   ctx.fillRect(building.x, y, building.w, rebuildHeight);
+
+  if (building.hitFlash > 0) {
+    ctx.fillStyle = `rgba(255, 215, 107, ${0.32 * building.hitFlash})`;
+    ctx.fillRect(building.x, y, building.w, rebuildHeight);
+  }
 
   ctx.fillStyle = building.trim;
   ctx.globalAlpha = 0.7;
@@ -310,4 +327,19 @@ function drawCitizens(ctx, city) {
     }
     ctx.globalAlpha = 1;
   }
+}
+
+function drawMilitaryScan(ctx, city) {
+  ctx.save();
+  ctx.globalAlpha = Math.min(0.5, city.militaryPresence / 180);
+  ctx.strokeStyle = '#00d4ff';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < 3; i++) {
+    const x = (performance.now() * 0.025 + i * city.width * 0.35) % city.width;
+    ctx.beginPath();
+    ctx.moveTo(x, 40 + i * 20);
+    ctx.lineTo(x + Math.sin(performance.now() * 0.002 + i) * 80, city.groundY);
+    ctx.stroke();
+  }
+  ctx.restore();
 }
