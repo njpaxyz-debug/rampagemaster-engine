@@ -1,0 +1,5 @@
+{
+  "ok": true,
+  "failures": [],
+  "summary": "Node smoke test passed locally in the ChatGPT container. Full test output is available in the downloadable package."
+}
