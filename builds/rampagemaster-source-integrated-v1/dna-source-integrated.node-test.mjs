@@ -1,0 +1,14 @@
+import {selfTest,makePopulation,deriveRendererPacket,evolveByExistingCulture,SOURCE_PROVENANCE} from './src/dna-source-integrated.js';
+const result=selfTest();
+const pop=makePopulation(12,'node');
+const packets=pop.map(deriveRendererPacket);
+evolveByExistingCulture(pop[0],{nutrient:.1,regeneration:.05,mutationStress:.01},120);
+const evolved=deriveRendererPacket(pop[0]);
+const failures=[];
+if(!result.ok) failures.push('selfTest not ok');
+if(!packets.every(p=>p.taxonomy?.phylum)) failures.push('missing phylum');
+if(!packets.every(p=>Array.isArray(p.motion.track)&&p.motion.track.length)) failures.push('missing motion track');
+if(!packets.every(p=>p.face?.phenotype)) failures.push('missing face phenotype');
+if(!SOURCE_PROVENANCE.taxonomyEngine.includes('EXPANDED')) failures.push('bad provenance');
+console.log(JSON.stringify({ok:failures.length===0, failures, self:result, sample:packets.map(p=>({name:p.name,stage:p.stage.id,kingdom:p.taxonomy.kingdom,phylum:p.taxonomy.phylum,loop:p.motion.currentLoop,idle:p.motion.idleProfile.id,warnings:p.warnings})), evolved:{stage:evolved.stage.id, taxonomy:evolved.taxonomy, warnings:evolved.warnings}}, null, 2));
+if(failures.length) process.exit(1);
