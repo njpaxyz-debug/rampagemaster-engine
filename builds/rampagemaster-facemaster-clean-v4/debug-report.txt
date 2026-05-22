@@ -1,0 +1,34 @@
+RampageMASTER FaceMaster Clean v4 Debug Report
+
+Issue: v3 still displayed only title/subtitle and no eggs.
+
+Root cause corrected:
+- Eggs were created only by JavaScript after load through `initEggs()`. If load timing, saved-state behavior, or a later script failure interrupted that path, `#etray` remained empty.
+
+Permanent fix:
+- `#etray` now contains three static egg buttons in the initial HTML.
+- `RampageEggBoot` runs before the main game engine and wires those static eggs immediately.
+- Once the main engine loads, the same buttons hand off to existing `selectEgg()`.
+- The main `initEggs()` function remains canonical and self-resetting.
+- `window.initEggs`, `window.selectEgg`, `window.hatchEgg`, and `window.startGame` are explicitly exposed after their definitions.
+
+Leftovers erased/confirmed absent:
+- No `rmLiveOpsShell`.
+- No `rmx-*` LiveOps layer.
+- No `__rmxHooks`.
+- No duplicate `const KAIJU = [...]` runtime collision.
+- Old v3 launch invariant removed.
+
+Checks run:
+- Extracted both script blocks.
+- Ran `node --check` successfully.
+- Static regression passed:
+  - raw HTML includes 3 `data-egg-label` buttons.
+  - `RampageEggBoot` exists before the main script.
+  - canonical egg functions are exposed for handoff.
+  - no old overlay hook leftovers.
+
+Browser automation note:
+- Playwright/Chromium navigation is blocked by administrator policy in this execution environment. The correction does not depend on the browser executing the main script to show eggs; the egg buttons are in the raw HTML itself.
+
+No new taxonomy categories, no new gene engine, and no haptics were added.
