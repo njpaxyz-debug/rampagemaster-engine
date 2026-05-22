@@ -1,0 +1,42 @@
+RampageMASTER FaceMaster Clean v6 Debug Report
+
+Goal: connect full sequence start to finish: egg selection, kaiju randomization, city release, cityscape destruction/customization, mini games, and kaiju growth.
+
+Base artifact: rampagemaster_facemaster_clean_v5.html
+
+Changes made in clean-up mode:
+- Kept existing Facial Anatomy V8.1, Expanded Taxonomy + Aging V5.4, GigaPet v6 runtime, KAIJU_ANATOMY, city/destruction, upgrades, missions, and admin console.
+- Did not add new taxonomy categories, new gene systems, or haptics.
+- Added CITY, ARCADE, and GROWTH tabs using existing game data/actions.
+- Added sequence state object to the existing save object.
+- Connected city customization to existing TZ_THEMES.
+- Connected arcade micro-runs to existing attack/care/roar/stamp style actions rather than importing the removed LiveOps shell.
+- Connected growth to existing level/evolution/currency/XP/stat systems.
+
+Critical release fix:
+- hatchEgg now stores the actual kaiju object in pendingHatchKaiju.
+- startGame now uses pendingHatchKaiju or a KAIJU id lookup and writes G.petType = kt.id.
+- This avoids egg-slot/index confusion and ensures the renderer can find the selected kaiju after UNLEASH.
+
+Checks run:
+- Extracted both script blocks from generated HTML.
+- Ran node --check on both scripts successfully.
+- Static regression assertions passed:
+  * raw HTML contains at least 3 egg buttons
+  * preboot is wire-only
+  * new clean v6 storage key exists
+  * no rmLiveOpsShell remains
+  * no __rmxHooks remains
+  * exactly one active const KAIJU = Object.values(KAIJU_ANATOMY)
+  * CITY/ARCADE/GROWTH panels exist
+  * startGame sets G.petType = kt.id
+  * startGame hides egg screen after setting runtime started
+  * runArcade/applyCityTheme/trainKaiju are exposed
+
+Browser automation note:
+- A local Chromium executable exists, but navigation to file:// and localhost is blocked by administrator policy in this environment, so I could not run a full visual browser smoke test here.
+
+Files generated:
+- rampagemaster_facemaster_clean_v6.html
+- rampagemaster_facemaster_clean_v6_package.zip
+- rampagemaster_facemaster_clean_v6_debug_report.txt
