@@ -1,0 +1,29 @@
+RampageMASTER FaceMaster Clean v2 Debug Report
+
+Input: 3553311f0_gigakaiju_facemaster.html
+
+Corrections:
+- Removed external Google font dependency so the artifact is self-contained and does not stall in local/sandbox viewing.
+- Removed duplicate overlay CSS/HTML/JS layer.
+- Removed old rmx hook patch.
+- Removed the legacy early `const KAIJU = [...]` table; the canonical runtime now has exactly one active `const KAIJU = Object.values(KAIJU_ANATOMY)`.
+- Replaced egg initialization with a self-resetting `initEggs()` that restores the visible egg UI and then populates exactly three clickable eggs.
+- Added `RampageDebug.launchInvariant()` as the only retained boot safeguard. It only repairs the egg tray when no active pet exists and the visible egg screen has an empty/hidden tray.
+
+Checks:
+- `node --check` passed for the single script block.
+- Playwright smoke test passed:
+  1. Load build.
+  2. Verify 3 eggs visible.
+  3. Click egg.
+  4. Verify hatch result screen.
+  5. Name kaiju and start game.
+  6. Verify game state and city render data.
+  7. Run feed/play/heal/attack/breath/roar/stamp actions.
+  8. Force empty egg tray repair.
+  9. Verify 3 eggs are restored with no page errors.
+
+Excluded by design:
+- New taxonomy categories.
+- New gene engine.
+- Native feedback/haptics.
