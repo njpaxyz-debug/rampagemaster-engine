@@ -1,0 +1,37 @@
+{
+  "version": "rampagemaster_v6_source_applied_v1",
+  "base_game": "gigapet_v6_best one yet.html",
+  "rule": "integrate existing uploaded code only",
+  "integrated_sources": [
+    {
+      "file": "gigapet_v6_best one yet.html",
+      "use": "current playable game shell, city, destruction, care, upgrades, missions, HUD"
+    },
+    {
+      "file": "rampagemaster_source_integrated_v1/src/dna-source-integrated.js",
+      "use": "globalized source-integrated adapter; no new taxonomy categories"
+    },
+    {
+      "file": "Kaiju Facial Anatomy CoreV8.1.html",
+      "use": "face phenotype, expression, eye rig, and anatomy API through source-integrated module"
+    },
+    {
+      "file": "facial_anatomy_engine_v3.jsx",
+      "use": "helper concepts only: isoProject, tintHex, smootherstep for depth/readability overlay"
+    }
+  ],
+  "patched_gameplay": [
+    "G.dnaSpecimen created at hatch/load",
+    "feed/play/heal/attack/special/upgrade/level events call existing evolveByExistingCulture adapter",
+    "kaiju draw call now renders base game body plus DNA/face overlays",
+    "HUD displays existing taxonomy kingdom/phylum/stage/idle loop"
+  ],
+  "excluded": [
+    "invented v3/v4 gene expansions",
+    "new categories not in source files",
+    "native feedback/haptics"
+  ],
+  "debug": {
+    "node_check": "passed"
+  }
+}
