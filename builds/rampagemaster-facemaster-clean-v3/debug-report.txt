@@ -1,0 +1,23 @@
+RampageMASTER FaceMaster Clean v3 Debug Report
+
+Issue: user still saw no eggs after v2.
+
+Likely cause: old saved state and auto-resume behavior from previous builds. The old `gigapetv4` key could make the game think a pet already existed, which hid the egg screen. v2 also retained one old hook patch leftover.
+
+Corrections:
+1. Replaced the old storage key with `rampagemaster_facemaster_clean_v3`.
+2. Added `clearLegacyBootKeys()` to erase old boot-state interference from previous artifact keys.
+3. Changed launch behavior so egg selection is always visible on load.
+4. If a valid saved kaiju exists under the new key, it appears as an explicit CONTINUE button below the eggs rather than auto-hiding the egg selection.
+5. Strengthened `initEggs()` to be self-resetting: title/subtitle/tray/result state are restored before eggs are created.
+6. Removed leftover duplicate overlay hooks.
+
+Checks run:
+- Extracted the single script block from the HTML.
+- Ran `node --check` successfully.
+- Ran static regression assertions successfully.
+
+Browser automation note:
+- Local Chromium/Playwright navigation is blocked in the execution environment by administrator policy, so a full visual browser smoke test could not be performed here. The file is self-contained and the JavaScript syntax/static launch invariants passed.
+
+No new taxonomy categories, no new gene engine, and no haptics were added.
