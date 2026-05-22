@@ -1,0 +1,23 @@
+RampageMASTER FaceMaster Clean v1 Debug Report
+
+Input: 3553311f0_gigakaiju_facemaster.html
+
+Salvage decisions:
+- Kept Kaiju Facial Anatomy Core V8.1 intact as source face/eye/expression engine.
+- Kept Expanded Taxonomy + Aging V5.4 intact as source taxonomy/stage/skin/motion engine.
+- Kept GigaPet v6 main city-rampage engine intact as playable runtime.
+- Kept KAIJU_ANATOMY bridge table as the enriched runtime kaiju source.
+- Kept Admin Console.
+- Removed duplicate LiveOps shell overlay because missions/status/upgrades already exist in the main runtime.
+
+Repairs:
+- Renamed original early `const KAIJU = [...]` to `const LEGACY_KAIJU = [...]`.
+- Kept exactly one runtime `const KAIJU = Object.values(KAIJU_ANATOMY)`.
+- Added canon source aliases after source modules initialize: `FACE = globalThis.KaijuFaceAnatomyCoreV81` and `TAX = globalThis.ExpandedTaxonomyV54`.
+- Added safe boot checkpoint that repopulates eggs only if the visible egg tray is empty.
+
+Checks:
+- `node --check` passed on extracted script.
+- Runtime smoke harness passed: load -> 3 eggs -> egg click -> hatch result -> start game -> render frames -> action buttons.
+
+No new kaiju categories, gene taxonomies, or haptics were added.
