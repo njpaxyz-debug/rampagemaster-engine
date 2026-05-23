@@ -1,0 +1,33 @@
+RampageMASTER FaceMaster Clean v7 Debug Report
+
+Issue: after v6, the egg flow could reach game state, but the user still reported no visible city or kaiju.
+
+Clean-up/revision fixes applied:
+1. Kept the v6 source stack intact: Face Anatomy V8.1, Expanded Taxonomy/Aging V5.4, GigaPet v6 runtime, KAIJU_ANATOMY, city/destruction/upgrades/missions/actions.
+2. Did not add new taxonomy categories, gene engines, haptics, LiveOps shells, or new renderer families.
+3. Added a revision-only city runtime checkpoint using existing renderer functions.
+4. `startGame()` now sets `window.G`, hides the launch screen, then calls `ensureCityRuntime('startGame')` immediately and again after a short delay.
+5. `continueSavedGame()` does the same for continue flow.
+6. `ensureCityRuntime()` confirms canvas is visible, an active kaiju id exists, city buildings exist or are regenerated, one visible city frame is drawn immediately, and the normal animation loop is requested.
+7. Unified kaiju draw is now protected by fallback to the original legacy kaiju renderer if the anatomy-driven overlay fails.
+
+Checks performed:
+- Extracted both script blocks from the generated HTML.
+- `node --check` passed on both script blocks.
+- Headless browser test via Playwright `page.set_content()` passed:
+  * 3 eggs visible.
+  * click egg -> hatch result visible.
+  * UNLEASH -> egg screen hidden.
+  * game state has a valid petType.
+  * canvas is visible with nonzero dimensions.
+  * city buildings are generated.
+  * kaiju is visible in the rendered screenshot.
+  * feed/play/heal/attack/breath/roar/stamp/arcade/train/theme actions execute without page errors.
+
+Browser caveat:
+- Direct navigation to file:// is blocked by administrator policy in this environment, but set_content execution and screenshot validation worked.
+
+Generated artifacts:
+- rampagemaster_facemaster_clean_v7.html
+- rampagemaster_facemaster_clean_v7_package.zip
+- rampagemaster_facemaster_clean_v7_debug_report.txt
