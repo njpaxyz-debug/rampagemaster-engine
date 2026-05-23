@@ -1,0 +1,33 @@
+RampageMASTER FaceMaster Clean v9 Debug Report
+
+Issue addressed:
+- The game sequence works, but the facial anatomy overlay needed pixel cleanup, standardized distances, and clearer SVG-like detail.
+
+Revision-only changes:
+1. Kept the source stack intact: Kaiju Facial Anatomy Core V8.1, Expanded Taxonomy + Aging V5.4, GigaPet v6 runtime, KAIJU_ANATOMY, city/destruction/upgrades/missions/actions/admin console.
+2. Added no new taxonomy categories, no new gene engine, no haptics, and no LiveOps overlay.
+3. Replaced the v8 freeform face overlay with a standardized 64-unit pixel anatomy grid.
+4. Enlarged the in-game pixel head slightly for facial readability, then anchored the overlay to the actual head center instead of hard-coded height math.
+5. Standardized facial distances:
+   - browY = 23% of head height
+   - eyeY = 36%
+   - cheekY = 54%
+   - mouthY = 70%
+   - eye separation = 20% of head width
+   - all values snapped to a shared pixel unit
+6. Kept V8.1 engine value: expression, eye legality, iris modes, phylum hints, teeth, surfaces, and glow still come from FACE.computePhenotype() and FACE.buildEyeRig().
+7. Removed anti-clarity drift: no FACE.drawFace(), no preview square, no floating mini-canvas, no arbitrary eye/mouth offsets.
+8. Added diagnostic face-grid export: window.__RM_FACE_GRID__.
+9. Added an SVG reference guide: facemaster_face_grid_v9.svg.
+
+Checks run:
+- Extracted both script blocks from the generated HTML.
+- node --check passed on both scripts.
+- Static regression passed: static eggs present, no rmx hooks, no LiveOps shell, no FACE.drawFace call in overlay, V8.1 buildEyeRig remains active, v9 face grid diagnostics present.
+- Headless Chromium via Playwright page.set_content() passed: 3 eggs, hatch, UNLEASH, egg overlay hidden, valid petType, visible canvas/city/kaiju, v9 face grid generated, no page errors.
+
+Generated files:
+- rampagemaster_facemaster_clean_v9.html
+- rampagemaster_facemaster_clean_v9_package.zip
+- rampagemaster_facemaster_clean_v9_debug_report.txt
+- facemaster_face_grid_v9.svg
