@@ -1,0 +1,43 @@
+RampageMASTER FaceMaster Clean v11 Debug Report
+
+Issue addressed:
+- User requested redundancy debugging and UX/UI polish after the game sequence, city, kaiju, and FaceMaster facial anatomy had become functional.
+
+Revision-only changes:
+1. Kept existing source stack intact: Kaiju Facial Anatomy Core V8.1, Expanded Taxonomy + Aging V5.4, GigaPet v6 runtime, KAIJU_ANATOMY, city/destruction/upgrades/missions/actions/admin console.
+2. Added no new taxonomy categories, no new gene engine, no haptics, and no LiveOps overlay.
+3. Removed old repeating post-main egg-contract timers that could fight later runtime state.
+4. Replaced the previous timed launch invariant with callable diagnostics only.
+5. Updated stale storage key and labels to v11.
+6. Treated v1-v10 storage keys as legacy boot interference.
+7. Removed raw leftover hook identifiers from the HTML while retaining dynamic diagnostic checks.
+8. Added RampageDebug.redundancyReport() and RampageDebug.repairLaunchShell().
+9. Added UX polish CSS for panel spacing, dock height, touch targets, compact viewport behavior, internal panel scrolling, consistent cards/buttons, and reduced-motion support.
+
+Static checks:
+- Extracted both script blocks.
+- node --check passed on both scripts.
+- Duplicate ID scan returned no duplicate IDs.
+- Source scan confirmed no raw rmLiveOpsShell, no raw __rmxHooks, no clean-v10, and no repeating egg-contract timers.
+
+Browser smoke test:
+- Browser: /usr/bin/chromium through Playwright, headless.
+- Method: page.set_content() using generated HTML.
+- Result: passed.
+- Verified:
+  * 3 eggs visible.
+  * first egg click triggers hatch result.
+  * UNLEASH hides egg overlay.
+  * gameStarted true.
+  * valid G.petType generated.
+  * canvas visible and nonzero size.
+  * city/kaiju visible in screenshot.
+  * FACE grid version clean-v11 generated.
+  * redundancyReport() returns no duplicate IDs and no legacy shell/hook leftovers.
+  * feed/play/heal/toggleAtk/breath/roar/stamp/train/renderSequencePanels execute without page errors.
+
+Generated files:
+- rampagemaster_facemaster_clean_v11.html
+- rampagemaster_facemaster_clean_v11_package.zip
+- rampagemaster_facemaster_clean_v11_debug_report.txt
+- v11_after_start.png
