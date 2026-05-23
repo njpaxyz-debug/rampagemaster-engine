@@ -1,0 +1,40 @@
+RampageMASTER FaceMaster Clean v9 — Kaiju Visibility Fix
+
+Issue reported:
+- After hatching/releasing, no kaiju appeared in the city.
+
+Actual cause found:
+- v8 tried to preserve the old body renderer by storing a reference to drawKaiju.
+- Because JavaScript function declarations are hoisted, that captured reference could resolve to the later v8 drawKaiju wrapper instead of the original body renderer.
+- Result: drawKaiju called its own body reference repeatedly until Maximum call stack size exceeded, so the city frame could not finish rendering the kaiju.
+
+Clean-path fix:
+- Did not add new gameplay systems.
+- Did not add new taxonomy categories.
+- Did not add a boot patch.
+- Did not create another overlay renderer.
+- Replaced the captured renderer reference with an explicit preserved body function: drawKaijuBodyPreserved(cx, gy, kt, frame, evo, atkAnim).
+- drawKaiju remains the single gameplay kaiju entry point: drawKaiju() -> drawKaijuBodyPreserved() -> drawGameplayFaceMasterLayer().
+- The FaceMaster V8.1 face layer remains composited on the preserved city body.
+
+Verification performed:
+- Extracted both script blocks from the generated HTML.
+- node --check passed on both scripts.
+- Headless browser set_content smoke test passed:
+  1. 3 eggs visible.
+  2. Egg click produces hatch result.
+  3. UNLEASH hides egg screen.
+  4. G.petType is valid: pyrosaur during the smoke run.
+  5. Canvas visible: 1280 x 900.
+  6. drawKaiju, drawKaijuBodyPreserved, and drawGameplayFaceMasterLayer are all functions.
+  7. G.sequence.faceLayer becomes true after render.
+  8. No Maximum call stack errors.
+  9. No page errors.
+  10. Screenshot confirms city, kaiju body, and V8.1 FaceMaster face are visible.
+
+Generated artifact:
+- rampagemaster_facemaster_clean_v9_face_layer.html
+- rampagemaster_facemaster_clean_v9_face_layer_package.zip
+- rampagemaster_facemaster_clean_v9_debug_report.txt
+- v9_after_start.png
+- v9_attack_face.png
