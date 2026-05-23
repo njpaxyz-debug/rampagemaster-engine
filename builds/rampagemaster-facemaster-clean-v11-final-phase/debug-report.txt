@@ -1,0 +1,80 @@
+RampageMASTER FaceMaster Clean v11 — Final Phase Debug Report
+
+Scope requested:
+- Continue with the next and final third phase using the v9/v10 debug method.
+- Continue randomizer and admin access.
+- Marry colors and skin texture.
+- Connect DNA taxonomy so evolution steps make sense and are visible.
+- Keep this in clean-up/revision mode.
+
+Source stack kept:
+- FaceMaster V8.1 remains the gameplay face layer.
+- Expanded Taxonomy + Aging V5.4 remains the DNA/taxonomy/stage/skin source.
+- KAIJU_ANATOMY remains the species bridge table.
+- GigaPet v6 city/destruction/runtime remains the gameplay host.
+
+What was NOT added:
+- No new taxonomy categories.
+- No new gene engine.
+- No new boot patch.
+- No LiveOps shell.
+- No haptics.
+- No new gameplay renderer entry point.
+
+Final phase implementation:
+1. Added RM_FINAL_PHASE_VERSION = facemaster-clean-v11-final-phase.
+2. Added rmRecordEvolutionTransition(reason) to track existing V5.4 stage/skin/phylum transitions.
+3. Added visible evolution memory/log under G.dna.memory.
+4. Added renderEvolutionPathPanel(spec) inside the Growth DNA readout.
+5. Added rmStageVisualScale(spec) so existing V5.4 age stages create visible size changes.
+6. Added rmDrawTaxonomyTextureLayer(ctx, shape, sc, kt, frame) using only existing V5.4 SKINS keys: flesh, scales, slime, chitin, stone, biolume, flora, fungal, crystal.
+7. Patched drawKaijuBodyPreserved() so body colors now use computeKaijuVisualPalette().
+8. Patched drawKaijuBodyPreserved() to draw visible skin texture on the preserved old body shapes.
+9. Patched drawGameplayFaceMasterLayer() so V8.1 face size/anchor follows the same DNA stage scale as the body.
+10. Admin panel now reports Final Phase, DNA Skin, and DNA Stage.
+
+Active draw path remains:
+- drawKaiju()
+  -> drawKaijuBodyPreserved()
+  -> drawGameplayFaceMasterLayer()
+
+Debug checks performed:
+- Extracted both script blocks from generated HTML.
+- node --check passed on both script blocks.
+- Headless Chromium set_content smoke sequence passed:
+  * 3 egg buttons visible.
+  * egg click -> hatch result visible after hatch animation.
+  * startGame releases to city.
+  * egg screen hidden.
+  * active petType exists.
+  * canvas visible at 1280 x 900.
+  * FaceMaster face layer active.
+  * final phase object active.
+  * active DNA specimen exists.
+  * DNA summary includes stage and skin label.
+  * rmDrawTaxonomyTextureLayer exists.
+  * rmRecordEvolutionTransition exists.
+  * feed/play/heal/attack/breath/roar/stamp/arcade/train run without page errors.
+  * adminForceDnaSkin('flora') works.
+  * adminAdvanceDna(900) works.
+  * syncGrowthFromCity(false) works.
+  * visible DNA stage changed during test.
+  * visible skin package changed during test.
+  * evolution memory log recorded transitions.
+
+Smoke result sample:
+- petType: pyrosaur
+- initial DNA stage: EGG
+- initial skin package: Crystal
+- after admin/growth stage: FLEDGE
+- after admin/growth skin package: Flora
+- evolution memory log length: 5
+- faceLayer: true
+- finalPhase: true
+
+Generated artifacts:
+- rampagemaster_facemaster_clean_v11_final_phase.html
+- rampagemaster_facemaster_clean_v11_final_phase_package.zip
+- rampagemaster_facemaster_clean_v11_debug_report.txt
+- rampagemaster_facemaster_clean_v11_debug_report.json
+- v11_after_start.png
