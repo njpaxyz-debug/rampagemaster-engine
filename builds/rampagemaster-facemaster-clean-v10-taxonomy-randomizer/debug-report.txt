@@ -1,0 +1,60 @@
+RampageMASTER FaceMaster Clean v10 — Taxonomy Randomizer / Skin Color Bridge
+
+Scope requested:
+- Continue phased upgrade using the new debug method.
+- Continue with randomizer and admin access.
+- Marry colors and skin texture.
+- Connect DNA taxonomy so evolution steps make sense and are visible.
+- Keep this in clean-up/revision mode: no new taxonomy categories, no new gene engine, no LiveOps layer, no haptics, no boot patch.
+
+Source stack kept:
+- FaceMaster V8.1 renderer remains the gameplay face layer.
+- Expanded Taxonomy + Aging V5.4 remains the DNA/taxonomy/stage/skin source.
+- KAIJU_ANATOMY remains the species bridge table.
+- GigaPet v6 city/destruction/runtime remains the gameplay host.
+
+Implementation:
+1. Added ensureKaijuDnaState(kt, reason). It creates/maintains a DNA specimen from existing ExpandedTaxonomyV54.make(), then biases only the existing V5.4 genome fields from the existing KAIJU_ANATOMY stats, shape, skin, and abilities.
+2. Added syncDnaCultureFromGameplay(reason, minutes). Feed, play, heal, train, arcade, destruction, city theme, and level-up now push visible existing taxonomy culture values: nutrient, oxygen, pressure, regeneration, mutationStress, light, and ageMinutes.
+3. Added computeKaijuVisualPalette(kt, G). The running kaiju body and V8.1 face layer now share the same married palette: original species colors + existing TAX.SKINS package + evolution level.
+4. Updated drawKaijuBodyPreserved() to use the computed DNA/skin palette rather than raw kt.c1/kt.c2 only.
+5. Updated buildGameplayFaceSelection() to read active DNA phenotype/stage/skin and convert it to existing V8.1 variable levels and surfaces only.
+6. Updated drawFaceMasterSprite() with a light source-color tint pass so the high-detail face inherits the active skin/color package.
+7. Added a DNA/TAXONOMY readout to the Growth tab: kingdom, phylum, age stage, skin package, color swatches, evolution path, motion track, visible tags, and gene bars.
+8. Added admin randomizer tools: Random Kaiju, Reroll DNA, Age +240m, Age +900m, skin package buttons, and clear skin override.
+
+Clean-path constraints maintained:
+- No new taxonomy categories.
+- No new gene fields.
+- No new renderer entry point; drawKaiju() remains the active gameplay entry point.
+- No boot patch.
+- No LiveOps shell.
+- No haptics.
+
+Debug checks performed:
+- Extracted both script blocks from generated HTML.
+- node --check passed on both script blocks.
+- Headless Chromium set_content smoke test passed:
+  * 3 egg buttons visible.
+  * egg click produces hatch result.
+  * startGame releases to city.
+  * egg screen hidden after release.
+  * canvas visible at 1280 x 900.
+  * active petType exists.
+  * G.dna exists.
+  * DNA summary exists with stage and skin label.
+  * Face layer remains active.
+  * adminRandomizeKaiju/adminRandomizeDna/adminForceDnaSkin/adminAdvanceDna exist.
+  * feed/play/heal/attack/breath/roar/stamp/arcade/train execute without page errors.
+  * adminForceDnaSkin('crystal'), adminAdvanceDna(240), adminRandomizeDna execute without page errors.
+  * screenshot generated: v10_after_start.png.
+
+Smoke result sample:
+- active petType during run: golemzilla
+- DNA stage before admin aging: EGG
+- active skin package before admin aging: Crystal
+- DNA stage after admin age/reroll: FLEDGE
+- faceLayer: true
+
+Known note:
+- Older inactive debug renderer functions from prior FaceMaster attempts still exist in the file, but the active draw path remains the requested clean path: drawKaiju() -> drawKaijuBodyPreserved() -> drawGameplayFaceMasterLayer(). They are not called by the active gameplay renderer.
