@@ -1,0 +1,44 @@
+RampageMASTER FaceMaster Clean v12 Debug Report
+
+Phase 1 pass implemented: Debug Contracts + GameRoot Stabilization.
+
+Scope:
+- Revision mode only.
+- No new taxonomy categories.
+- No new gene engine.
+- No LiveOps/rmx overlay.
+- No haptics/native feedback.
+- No renderer replacement.
+
+Changes:
+1. Added GameRoot wrapper around the existing boot/start sequence.
+2. Replaced raw window-load boot body with GameRoot.bootLaunch().
+3. Added sequence logging via window.__RM_SEQUENCE_LOG__.
+4. Added callable debug contracts:
+   - assertEggContract()
+   - assertReleaseContract()
+   - assertCityRenderContract()
+   - assertFaceContract()
+   - assertViewportContract()
+   - assertSequenceContract()
+   - assertNoLeftovers()
+   - assertAll()
+5. Removed passive launch repair microtask; safeguards are now diagnostic/callable instead of fighting game state.
+6. Updated storage key to rampagemaster_facemaster_clean_v12 and treats v1-v11 as legacy boot interference.
+7. Kept wire-only static egg preboot.
+
+Build validation:
+- Extracted both script blocks from generated HTML.
+- node --check passed on both scripts.
+- Static checks passed: clean-v12 labels, GameRoot wrapper, assertAll contracts, raw static egg buttons, no passive post-main repair microtask, no raw __rmxHooks, no raw rmLiveOpsShell, v12 storage key, v11 listed as legacy boot interference.
+- Headless Chromium page.set_content smoke test passed:
+  * 3 eggs visible.
+  * egg click opens hatch result.
+  * UNLEASH hides egg overlay.
+  * valid G.petType.
+  * canvas visible and nonzero.
+  * city render contract passed.
+  * face grid contract passed with version clean-v12.
+  * viewport, sequence, and leftovers contracts passed.
+  * feed/play/heal/toggleAtk/doBreath/doRoar/doStamp/renderSequencePanels executed without page errors.
+- Screenshot generated: v12_after_start.png.
