@@ -1,0 +1,52 @@
+RampageMASTER FaceMaster Clean v8 — Face Layer Debug Report
+
+Scope requested:
+- Locate drawKaiju(): keep it as the only gameplay kaiju entry point.
+- Preserve old body shapes: do not rewrite city body animation.
+- Add buildGameplayFaceSelection(kt, G, frame): convert existing kaiju profile/gameplay state into V8.1 selection.
+- Add drawFaceMasterSprite(): draw V8.1 face into an offscreen canvas.
+- Add head anchors for rex/wolf/bear/golem/wing/cyborg/kraken.
+- Disable/cover old face area to prevent double faces.
+- Run smoke sequence: egg -> hatch -> unleash -> city visible -> kaiju visible -> face visible -> attack expression changes.
+
+Clean-path implementation:
+1. Removed the v7 unified body renderer from the active draw path.
+2. Preserved the original gameplay body path by copying the original drawKaiju body dispatcher into drawKaijuBodyPreserved().
+3. Re-established drawKaiju() as the single gameplay entry point: drawKaiju() -> drawKaijuBodyPreserved() -> drawGameplayFaceMasterLayer().
+4. Patched the existing KaijuFaceAnatomyCoreV81.drawFace() with opts.transparent so it can render a transparent face sprite instead of the standalone lab background/guide box.
+5. Added buildGameplayFaceSelection(kt, G, frameSec, atkAnim): uses existing kt.faceProfile and existing V8.1 expression/idle/variable vocabulary only.
+6. Added drawFaceMasterSprite(): renders V8.1 face to an offscreen high-resolution canvas and composites it on the gameplay canvas.
+7. Added head anchors for existing shapes only: rex, wolf, kraken, golem, wing, cyborg, bear.
+8. Added coverLegacyFaceArea() to cover the low-resolution old face before drawing the V8.1 face layer.
+9. Removed leftover post-main egg contract from prior boot patches. No new boot patch was added.
+
+What was not changed:
+- Egg selection/hatch/release flow not redesigned.
+- City generation not rewritten.
+- Destruction system not rewritten.
+- Missions/upgrades/growth not rewritten.
+- No new taxonomy categories.
+- No new gene engine.
+- No LiveOps overlay.
+- No native haptics.
+
+Smoke test results:
+- node --check passed on both script blocks.
+- Headless browser set_content() smoke test passed.
+- Eggs visible before hatch: 3.
+- Hatch result displayed: yes.
+- UNLEASH hides egg screen: yes.
+- Game started flag: true.
+- Active petType after unleash: gigarex.
+- Canvas dimensions after unleash: 1280 x 900.
+- Face layer adapter present: true.
+- Active drawKaiju contains drawGameplayFaceMasterLayer: true.
+- Active drawKaiju does not call drawKaijuUnified: true.
+- Face layer marked sequence.faceLayer after render: true.
+- Action calls tested without page errors: feedPet, playPet, healPet, toggleAtk, doBreath, doRoar, doStamp.
+- Expression mapping tested: normal expression = wary; attack expression = fierce.
+- Screenshot generated: v8_after_start.png.
+
+Known note:
+- The FaceMaster face is now visible inside the gameplay canvas, not as a separate screen or overlay panel.
+- The old body shapes remain intact and act as the body silhouette while the V8.1 face provides the detailed head/face layer.
