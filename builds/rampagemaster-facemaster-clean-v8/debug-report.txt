@@ -1,0 +1,24 @@
+RampageMASTER FaceMaster Clean v8 Debug Report
+
+Issue reported: city/kaiju are visible, but the FaceMaster anatomy overlay is oversized and visually pasted on top of the body. User also requested identification of issues.
+
+Clean-up/revision changes only:
+1. Kept the existing source stack intact: Kaiju Facial Anatomy Core V8.1, Expanded Taxonomy + Aging V5.4, GigaPet v6 runtime, KAIJU_ANATOMY bridge table, existing city/destruction/upgrades/missions/actions/admin console.
+2. Removed no gameplay systems and added no new taxonomy/gene systems.
+3. Corrected facial anatomy overlay scale: old base * 2.0; new base * 0.92.
+4. Corrected face anchor: old centered above the head; new centered inside the actual pixel head.
+5. Removed the visible square FaceMaster viewport effect: old drawFaceOverlay called FACE.drawFace(), which clears/fills its own dark background and border; new drawFaceOverlay uses FACE.computePhenotype() and FACE.buildEyeRig() as data only, then draws transparent sockets, brows, eyes, mouth, horns, texture marks, and glow directly on the existing pixel head.
+6. Preserved face-engine value: expressions still use V8.1 emotion data, eye count/layout still uses V8.1 buildEyeRig(), skin/surface hints still use V8.1 phenotype skin data, and game state still drives rage/hunger/happiness expression selection.
+7. Added lightweight ID diagnostics: window.__RM_ACTIVE_KAIJU_ID__, window.__RM_NEAR_BUILDING_COUNT__, and window.__RM_LAST_VISIBLE_FRAME__ remains intact.
+
+Checks run:
+- Extracted both script blocks.
+- node --check passed on both scripts.
+- Headless browser set_content smoke test passed: 3 eggs visible, egg click -> hatch result, UNLEASH -> egg screen hidden, valid petType, canvas visible, no page errors, screenshot shows city and kaiju visible.
+
+Generated artifact:
+- rampagemaster_facemaster_clean_v8.html
+- rampagemaster_facemaster_clean_v8_package.zip
+- rampagemaster_facemaster_clean_v8_debug_report.txt
+
+No haptics/native feedback added.
