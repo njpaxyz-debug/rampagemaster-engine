@@ -1,0 +1,36 @@
+RampageMASTER FaceMaster Clean v13 — Body Taxonomy Debug Report
+
+Scope:
+- Improve outer kaiju body shape and taxonomy continuity.
+- Keep the v12 source-governed identity randomizer.
+- Keep FaceMaster V8.1 as the face layer.
+- Keep active gameplay entry point: drawKaiju() -> drawKaijuBodyPreserved() -> drawGameplayFaceMasterLayer().
+
+Implementation:
+1. Added resolveKaijuOuterBodyPlan(kt), deriving visible body plan from existing KAIJU_ANATOMY, active V12 identity taxonomy, V5.4 skin package, V5.4 genome values, DNA stage scale, and locomotion plan.
+2. Added rmDrawTaxonomyOuterBack() and rmDrawTaxonomyOuterFront() to draw outer silhouette/appendage cues around the preserved body.
+3. The resolved visual render classes are constraints derived from existing data only: winged, cephalopod, mineral, arthropod, stalker, brute, saurian.
+4. Preserved old body shapes as the core silhouette. v13 only adds taxonomy-governed outer features and head-anchor continuity.
+5. Adjusted getGameplayHeadAnchor() so the FaceMaster V8.1 face follows the outer body plan.
+6. Added Growth/Admin readouts for the resolved outer body plan.
+
+What was not changed:
+- No egg boot rewrite.
+- No hatch/startGame rewrite.
+- No new taxonomy categories.
+- No new DNA/gene engine.
+- No LiveOps shell.
+- No haptics.
+- No new gameplay renderer entry point.
+
+Static checks:
+- node --check passed on all script blocks.
+- RampageOuterBodyV13 present.
+- resolveKaijuOuterBodyPlan present.
+- rmDrawTaxonomyOuterBack / rmDrawTaxonomyOuterFront present.
+- v12 identity randomizer retained.
+- no rmLiveOpsShell / __rmxHooks leftovers.
+- no new boot/visibility forcing patch added.
+
+Browser note:
+- Playwright is available as a Python package, but its Chromium binary is not installed in this execution environment, so I could not run a live screenshot smoke test here.
