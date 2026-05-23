@@ -1,0 +1,33 @@
+RampageMASTER FaceMaster Clean v10 Debug Report
+
+Issue addressed:
+- User confirmed sequence works, but facial anatomy still looked static, floating, and less detailed than the original FaceMaster engine.
+
+Revision-only changes:
+1. Kept the existing source stack intact: Kaiju Facial Anatomy Core V8.1, Expanded Taxonomy + Aging V5.4, GigaPet v6 runtime, KAIJU_ANATOMY, city/destruction/upgrades/missions/actions/admin console.
+2. Added no new taxonomy categories, no new gene engine, no haptics, and no LiveOps overlay.
+3. Replaced the v9 face overlay call signature. It now receives the actual rendered head box: headX/headY/headW/headH from drawKaijuUnified.
+4. The face overlay is now attached to the exact body-rendered head rectangle. It no longer uses a free-floating center/size guess.
+5. Interactive gaze was restored: existing pointer tracking now drives pupil/iris offsets; idle gaze drives it when no pointer is present.
+6. V8.1 FaceMaster data remains active: computePhenotype() supplies expression/surface/glow/teeth; buildEyeRig() supplies legal eye count/layout.
+7. The overlay draws snapped SVG-like geometry directly inside the head box: skull planes, cheek lines, brows, eyes, iris/pupils, teeth, horns/crests, surface marks, glow line.
+8. Added diagnostic packet: window.__RM_FACE_GRID__.version = clean-v10 with headBox and gaze mode.
+
+Checks run:
+- Extracted both script blocks from the generated HTML.
+- node --check passed on both scripts.
+- Headless Chromium via Playwright page.set_content() passed:
+  * 3 eggs visible
+  * egg click -> hatch result
+  * UNLEASH -> egg overlay hidden
+  * valid petType
+  * visible canvas/city/kaiju
+  * clean-v10 face grid generated
+  * pointer mode gaze recorded
+  * no page errors
+
+Generated files:
+- rampagemaster_facemaster_clean_v10.html
+- rampagemaster_facemaster_clean_v10_package.zip
+- rampagemaster_facemaster_clean_v10_debug_report.txt
+- facemaster_face_grid_v10.svg
