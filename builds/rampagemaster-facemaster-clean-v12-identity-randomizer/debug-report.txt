@@ -1,0 +1,68 @@
+RampageMASTER FaceMaster Clean v12 — Source-Governed Identity Randomizer Debug Report
+
+Scope requested:
+- Make existing data govern the whole creature.
+- Randomization should create many kaiju while preserving anatomy, palette, movement, and evolution logic.
+- Continue the v9/v10/v11 debug method.
+- Do not add new taxonomy categories, new gene engine, boot patch, LiveOps shell, haptics, or a new renderer entry point.
+
+Source stack kept:
+- KAIJU_ANATOMY species bridge table remains the source for root species/body shape.
+- Expanded Taxonomy + Aging V5.4 remains the source for DNA fields, taxonomy, skin packages, phenotype, age stages, and motion track.
+- FaceMaster V8.1 remains the source for facial anatomy, expression, eye/iris/jaw/teeth/surface options.
+- GigaPet v6 city/destruction/runtime remains the gameplay host.
+
+Implemented in v12:
+1. Added RampageIdentityV12 as a source-governed identity layer.
+2. Each egg now creates a complete identity packet before hatch.
+3. Egg cards now preview generated identity instead of generic egg labels only.
+4. Hatch stores the selected identity and displays its generated name/taxonomy/stats.
+5. Start game attaches G.identity and G.dna.identity to the selected kaiju and uses the identity stats/HP/spec.
+6. ensureKaijuDnaState now preserves the identity DNA specimen when available.
+7. computeKaijuVisualPalette now merges species colors + V5.4 skin package + identity seed palette.
+8. buildGameplayFaceSelection now constrains FaceMaster V8.1 face choices based on current taxonomy/body shape.
+9. drawFaceMasterSprite strengthens palette continuity so the V8.1 face no longer drifts into unrelated color families.
+10. drawKaijuBodyPreserved adds small taxonomy locomotion motion without changing the renderer entry point.
+11. Growth DNA readout adds an Identity Packet panel.
+12. Admin panel adds V12 Identity Packet with reroll identity, reroll palette, copy JSON, and advance stage tools.
+
+Active draw path preserved:
+- drawKaiju()
+  -> drawKaijuBodyPreserved()
+  -> drawGameplayFaceMasterLayer()
+
+Debug checks performed:
+- Extracted both script blocks from the generated HTML.
+- node --check passed on both scripts.
+- Headless Chromium set_content smoke test passed.
+
+Smoke sequence verified:
+- 3 egg buttons visible.
+- Egg click produces hatch result.
+- Hatch result displays generated identity name.
+- UNLEASH/start releases to city.
+- Egg screen hidden.
+- Valid petType exists.
+- G.identity exists.
+- G.dna.spec exists.
+- G.dna.summary exists.
+- Canvas visible at 1280 x 900.
+- FaceMaster layer active.
+- Body/face palette comes from identity + V5.4 skin package.
+- Growth DNA readout includes identity packet information.
+- Admin V12 functions exist and run.
+- feed/play/heal/attack/breath/roar/stamp/arcade/train run without page errors.
+- adminV12RerollPalette runs without page errors.
+- Screenshot generated: v12_after_start.png.
+
+Sample generated during smoke test:
+- Generated identity: Crystalline Golemzilla
+- Base species: golemzilla
+- Taxonomy: mineralis / crystalline
+- Skin package: crystal, later admin-rerolled to stone
+- Face plan: faceted carapace, mandibles, starburst/dorsal eye logic
+- Locomotion: heavy / lumber_shift
+- DNA stage after active gameplay/admin: adolescent
+
+Known note:
+- This phase uses existing body shapes only. The randomizer creates hundreds/thousands of coherent identities by combining existing root species, existing V5.4 DNA/taxonomy/skin/stage data, existing FaceMaster constraints, seed palettes, stats, and locomotion plans.
