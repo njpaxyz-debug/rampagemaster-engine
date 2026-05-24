@@ -1,0 +1,72 @@
+RampageMASTER FaceMaster Clean v14 — Body Anatomy / Taxonomy Mathematics Debug Report
+
+Scope requested:
+- Extend the same taxonomy details from the FaceMaster face layer into the outer body.
+- Increase detail, skeletal structure, and taxonomy data so the creature reads as natural rather than pasted together.
+- Hatch as a baby.
+- Confirm evolution track, taxonomy value changes, and mathematics.
+- Continue in clean-up/revision mode only.
+
+Source stack kept:
+- KAIJU_ANATOMY remains the root species/body bridge.
+- Expanded Taxonomy + Aging V5.4 remains the DNA/taxonomy/stage/skin/source-math engine.
+- FaceMaster V8.1 remains the facial anatomy/expression/eye/jaw/surface source.
+- Existing city/destruction/runtime remains the gameplay host.
+- Active draw path remains drawKaiju() -> drawKaijuBodyPreserved() -> drawGameplayFaceMasterLayer().
+
+What was not added:
+- No new taxonomy categories.
+- No new gene engine.
+- No boot patch.
+- No LiveOps shell.
+- No haptics.
+- No replacement renderer family.
+
+Implemented in v14:
+1. Added resolveKaijuBodyAnatomyV14(kt), resolving a body anatomy packet from the active V12 identity, V5.4 taxonomy, V5.4 genome fields, active skin package, species shape, and life stage.
+2. Added rmDrawTaxonomySkeletonV14(ctx, scale, anatomy, frame, layer), drawing source-governed skeletal/rib/limb/nerve structure over the preserved city body.
+3. Baby hatch math and scale: hatched kaiju now begin as a baby-stage body, not a full-size adult.
+4. Evolution math is explicitly stored and visible.
+5. Body proportions and skeleton math are derived from existing V5.4 genome fields.
+6. Growth/Admin readouts expose the V14 body anatomy packet.
+
+Evolution formula:
+ageMinutes = 12 baby base + level×42 + care×8 + training×34 + destroyedBuildings×1.2 + arcadeBonus18 + evo×520
+stage = highest ExpandedTaxonomyV54.AGE_STAGES row whose minAge/minStability are met.
+
+Body math:
+- mass = 0.64 + bodyNorm×0.32 + armorNorm×0.12 + stageIndex×0.035
+- height = 0.72 + bodyNorm×0.22 + spineNorm×0.18
+- width = 0.74 + bodyNorm×0.25 + armorNorm×0.18
+- limb = 0.52 + limbsNorm×0.52 + agilityNorm×0.16
+- tail = 0.36 + tailNorm×0.72
+- wing = wingsNorm×1.10
+- texture = 0.25 + textureNorm×0.62 + armorNorm×0.20
+- glow = glowNorm×0.85 + mysteryNorm×0.20
+- skeletonDensity = 0.18 + spineNorm×0.45 + armorNorm×0.22 + stageIndex×0.035
+- ribCount = round(3 + bodyNorm×6 + stageIndex×0.45)
+- jointCount = round(4 + limbsNorm×8 + spineNorm×3)
+- tailVertebrae = round(3 + tailNorm×8)
+- wingBones = winged ? round(3 + wingsNorm×4) : 0
+
+Smoke test performed:
+- node --check passed on all script blocks.
+- Headless Chromium set_content smoke test passed.
+
+Smoke result sample:
+- eggs visible: 3
+- egg click -> hatch result -> UNLEASH -> city active
+- petType: thunderwing
+- generated identity: Crystal Thunderwing
+- taxonomy: mineralis / crystalline
+- bodyClass: winged, because the root species shape is Thunderwing/winged and the taxonomy/skin supplies crystalline surface math
+- stage at hatch: FLEDGE
+- stage scale: 0.64
+- relative head ratio: 1.28
+- skeleton: ribs 9, joints 9, limbPairs 2, wingBones 7, tailVertebrae 11
+- proportions: mass 1.107, height 1.031, width 1.137, wing 1.1, texture 0.739, glow 0.887
+- faceLayer: true
+- bodyAnatomy: true
+- hatchBaby: true
+- action buttons feed/play/heal/attack/breath/roar/stamp and adminAdvanceDna(30) executed without page errors
+- after action/growth: stage advanced to ADOLESCENT, scale 0.78, head ratio 1.12
