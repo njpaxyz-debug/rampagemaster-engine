@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RampageMaster Drive Sprite Smoke Test</title>
+<style>
+  body{margin:0;background:#071018;color:#eaf7e8;font:14px system-ui;padding:20px}canvas{display:block;width:min(100%,960px);background:#142233;border:1px solid #507060}button{margin:12px 8px 0 0}
+</style>
+<h1>Drive sprite pose smoke test</h1>
+<p id="status">Loading real six-pose Drive sheet…</p>
+<canvas id="stage" width="960" height="420"></canvas>
+<div id="controls"></div>
+<script type="module">
+import { createDriveSpriteAnimator } from '../src/animation/driveSpriteSheetAnimator.js';
+const states=['idle','patrol','inspect','phone','greet','rampage'];
+const canvas=document.querySelector('#stage'),ctx=canvas.getContext('2d'),status=document.querySelector('#status'),controls=document.querySelector('#controls');
+const animator=createDriveSpriteAnimator();
+let state='idle',start=performance.now();
+for(const name of states){const b=document.createElement('button');b.textContent=name;b.onclick=()=>state=name;controls.append(b)}
+try{await animator.load();status.textContent='Loaded. Rendering real Drive poses with procedural motion.'}catch(error){status.textContent=error.message;throw error}
+function frame(now){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#29475c';ctx.fillRect(0,340,canvas.width,80);animator.draw(ctx,{state,time:(now-start)/1000,x:canvas.width/2,y:350,width:260,height:300,panic:state==='rampage'?0.6:0});requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+</script>
