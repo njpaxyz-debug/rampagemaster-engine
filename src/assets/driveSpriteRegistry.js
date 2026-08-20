@@ -27,9 +27,10 @@ export const DRIVE_SPRITE_SHEETS = Object.freeze({
   reptileScientist: Object.freeze({
     id: 'reptileScientist',
     kind: 'pose-sheet',
+    available: true,
     assetPath: '../../assets/drive/reptile-scientist-six-pose.webp',
     originalName: 'reptile scientist canva sprite sheet.jpg.png',
-    productionDimensions: Object.freeze({ width: 647, height: 469 }),
+    productionDimensions: Object.freeze({ width: 360, height: 261 }),
     sourceDimensions: Object.freeze({ width: 1294, height: 938 }),
     grid: Object.freeze({ columns: 3, rows: 2 }),
     poses: REPTILE_SCIENTIST_POSES,
@@ -42,15 +43,16 @@ export const DRIVE_SPRITE_SHEETS = Object.freeze({
   mythicFour: Object.freeze({
     id: 'mythicFour',
     kind: 'reference-composite',
-    assetPath: '../../assets/drive/reference/mythic-four-archetypes.webp',
+    available: false,
+    assetPath: null,
     originalName: 'mythic four arche sprite.jpg.png',
-    productionDimensions: Object.freeze({ width: 800, height: 456 }),
+    stagedProductionDimensions: Object.freeze({ width: 360, height: 205 }),
     sourceDimensions: Object.freeze({ width: 1600, height: 912 }),
     grid: null,
     poses: Object.freeze([]),
     provenance: Object.freeze({
       source: 'Google Drive',
-      note: 'Reference/archetype composition only. Not interpreted as a uniform frame atlas.'
+      note: 'Reference/archetype composition only. Not interpreted as a uniform frame atlas; intentionally not required by the runtime pose lane.'
     })
   })
 });
