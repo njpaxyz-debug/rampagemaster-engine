@@ -1,3 +1,7 @@
+import { bossCampaignScore } from './modules/campaignEncounterEntities.js';
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
+
 export function processCityCollapseDelta(host, previousCollapseCount = 0) {
   const city = host?.city;
   const gameplay = host?.gameplay;
@@ -12,17 +16,29 @@ export function processCityCollapseDelta(host, previousCollapseCount = 0) {
   const lastBuilding = city.buildings?.find((building) => building.id === city.lastCollapse) || null;
   const baseScore = Math.max(24, Math.round((lastBuilding?.points || 8) * 4));
   let completed = false;
+  let bossDestroyed = false;
+  let totalScoreBase = 0;
   for (let i = 0; i < delta; i += 1) {
-    if (gameplay.state.mission?.phase !== 'active') break;
-    commands.campaignScore(baseScore, 'DEMOLITION');
-    if (gameplay.state.mission?.mission?.kind === 'destroy') {
+    const live = gameplay.state.mission;
+    if (!live || live.phase !== 'active') break;
+    const isFinalCollapse = i === delta - 1;
+    const isBoss = isFinalCollapse && live.mission?.kind === 'boss' && lastBuilding?.campaignRole === 'commandTower' && Number(lastBuilding?.hp || 0) <= 0;
+    const scoreBase = isBoss ? bossCampaignScore(gameplay.state.district) : baseScore;
+    live.threat = clamp((live.threat || 0) + (isBoss ? 23 : 13), 0, 100);
+    commands.campaignScore(scoreBase, isBoss ? 'BOSS BREAK' : 'DEMOLITION');
+    totalScoreBase += scoreBase;
+    if (live.mission?.kind === 'destroy') {
       const result = commands.campaignProgress(1, { districtCount: host.themePacks?.length || 1 });
+      completed ||= Boolean(result?.complete);
+    } else if (isBoss) {
+      bossDestroyed = true;
+      const result = commands.campaignProgress(1, { bossDestroyed: true, districtCount: host.themePacks?.length || 1 });
       completed ||= Boolean(result?.complete);
     }
   }
   commands.save();
   host.gameplayPanels?.render?.();
-  return { ok: true, delta, collapseCount: current, campaignUpdated: true, completed, baseScore, buildingId: lastBuilding?.id || null };
+  return { ok: true, delta, collapseCount: current, campaignUpdated: true, completed, bossDestroyed, baseScore, totalScoreBase, buildingId: lastBuilding?.id || null };
 }
 
 export function attachCityGameplayBridge(host = window.RampageMaster) {
