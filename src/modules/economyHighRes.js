@@ -1,8 +1,13 @@
+import { ECONOMY_PROFILES } from './economyProgression.js';
+
+const MASTER_ROUTES = ECONOMY_PROFILES.master20260509.routes;
+const routeFrom = (currencyId) => MASTER_ROUTES.find((route) => route.from === currencyId) || null;
+
 export const CURRENCY_LADDER = Object.freeze([
-  { id: 'bones', label: 'Bones', symbol: '◆', rateToNext: 200 },
-  { id: 'opal', label: 'Opal', symbol: '◇', rateToNext: 5 },
-  { id: 'quartz', label: 'Quartz', symbol: '⬡', rateToNext: 4 },
-  { id: 'diamond', label: 'Diamond', symbol: '⬢', rateToNext: 3 },
+  { id: 'bones', label: 'Bones', symbol: '◆', rateToNext: routeFrom('bones')?.cost ?? 100 },
+  { id: 'opal', label: 'Opal', symbol: '◇', rateToNext: routeFrom('opal')?.cost ?? 25 },
+  { id: 'quartz', label: 'Quartz', symbol: '⬡', rateToNext: routeFrom('quartz')?.cost ?? 10 },
+  { id: 'fossils', label: 'Fossils', symbol: '◌', rateToNext: routeFrom('fossils')?.cost ?? 5 },
   { id: 'oil', label: 'Oil', symbol: '◈', rateToNext: null }
 ]);
 
@@ -11,7 +16,7 @@ export function createWallet(seed = {}) {
     bones: seed.bones ?? 240,
     opal: seed.opal ?? 0,
     quartz: seed.quartz ?? 0,
-    diamond: seed.diamond ?? 0,
+    fossils: seed.fossils ?? 0,
     oil: seed.oil ?? 0,
     tokens: seed.tokens ?? 0,
     lifetimeBones: seed.lifetimeBones ?? 0
@@ -26,26 +31,16 @@ export function awardCityValue(wallet, building, multiplier = 1) {
 }
 
 export function convertCurrency(wallet, fromId, direction = 1) {
-  const index = CURRENCY_LADDER.findIndex((currency) => currency.id === fromId);
-  if (index < 0) return { ok: false, reason: 'unknown currency' };
-
-  if (direction > 0) {
-    const from = CURRENCY_LADDER[index];
-    const to = CURRENCY_LADDER[index + 1];
-    if (!to || !from.rateToNext) return { ok: false, reason: 'top currency' };
-    if ((wallet[from.id] || 0) < from.rateToNext) return { ok: false, reason: `need ${from.rateToNext} ${from.label}` };
-    wallet[from.id] -= from.rateToNext;
-    wallet[to.id] = (wallet[to.id] || 0) + 1;
-    return { ok: true, from: from.id, to: to.id, amount: 1 };
+  if (direction <= 0) return { ok: false, reason: 'reverse conversion not defined by canonical master economy' };
+  const route = routeFrom(fromId);
+  if (!route) {
+    const known = CURRENCY_LADDER.some((currency) => currency.id === fromId);
+    return { ok: false, reason: known ? 'top currency' : 'unknown currency' };
   }
-
-  const from = CURRENCY_LADDER[index];
-  const to = CURRENCY_LADDER[index - 1];
-  if (!to) return { ok: false, reason: 'base currency' };
-  if ((wallet[from.id] || 0) < 1) return { ok: false, reason: `need 1 ${from.label}` };
-  wallet[from.id] -= 1;
-  wallet[to.id] = (wallet[to.id] || 0) + Math.floor((to.rateToNext || 1) * 0.84);
-  return { ok: true, from: from.id, to: to.id, amount: Math.floor((to.rateToNext || 1) * 0.84) };
+  if ((wallet[route.from] || 0) < route.cost) return { ok: false, reason: `need ${route.cost} ${route.from}` };
+  wallet[route.from] -= route.cost;
+  wallet[route.to] = (wallet[route.to] || 0) + route.out;
+  return { ok: true, from: route.from, to: route.to, amount: route.out, spent: route.cost, profile: 'master20260509' };
 }
 
 export function walletSummary(wallet) {
