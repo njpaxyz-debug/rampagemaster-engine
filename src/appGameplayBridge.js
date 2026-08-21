@@ -45,6 +45,7 @@ export async function attachGameplayBridge(host, options = {}) {
     enterArcade: (mode) => core.enterArcade(mode),
     settleArcade: (score, mode) => core.settleArcade(score, mode),
     beginCampaign: (district) => core.beginCampaign(district),
+    campaignTick: (frames) => core.campaignTick(frames),
     campaignScore: (base, reason) => core.campaignScore(base, reason),
     campaignProgress: (amount, campaignOptions) => core.campaignProgress(amount, campaignOptions),
     failCampaign: (reason) => core.failCampaign(reason),
