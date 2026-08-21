@@ -1,4 +1,39 @@
+import { createDriveSpriteAnimator } from '../animation/driveSpriteSheetAnimator.js';
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+export const HIGH_RES_KAIJU_SKINS = Object.freeze([
+  Object.freeze({ id: 'procedural', label: 'Procedural Kaiju', source: 'v7.1 proportions + high-res renderer' }),
+  Object.freeze({ id: 'drive-reptile', label: 'Drive Reptile Scientist', source: 'reptile scientist canva sprite sheet.jpg.png' })
+]);
+
+let activeSkin = 'procedural';
+const driveReptileAnimator = createDriveSpriteAnimator('reptileScientist');
+let driveSkinLoadError = null;
+
+function ensureDriveSkinLoaded() {
+  if (typeof Image === 'undefined') return Promise.resolve(null);
+  return driveReptileAnimator.load().catch((error) => {
+    driveSkinLoadError = error;
+    return null;
+  });
+}
+
+export function listHighResKaijuSkins() { return HIGH_RES_KAIJU_SKINS.map((skin) => ({ ...skin })); }
+export function getHighResKaijuSkin() { return activeSkin; }
+export function getHighResKaijuSkinStatus() { return { activeSkin, driveReady: driveReptileAnimator.ready, driveError: driveSkinLoadError?.message || null }; }
+export function setHighResKaijuSkin(id = 'procedural') {
+  if (!HIGH_RES_KAIJU_SKINS.some((skin) => skin.id === id)) return { ok: false, reason: 'unknown-skin', activeSkin };
+  activeSkin = id;
+  if (id === 'drive-reptile') ensureDriveSkinLoaded();
+  return { ok: true, activeSkin, ready: id === 'procedural' || driveReptileAnimator.ready };
+}
+export async function loadHighResKaijuSkin(id = activeSkin) {
+  const selected = setHighResKaijuSkin(id);
+  if (!selected.ok || id === 'procedural') return selected;
+  await ensureDriveSkinLoaded();
+  return { ...selected, ready: driveReptileAnimator.ready, error: driveSkinLoadError?.message || null };
+}
 
 export function deriveVisualRig(taxonomy = {}, phenotype = {}, motionState = {}) {
   const phylum = taxonomy.phylum || 'draco';
@@ -83,9 +118,23 @@ export function drawHighResKaiju(ctx, motionState, taxonomy, phenotype) {
   const x = motionState.position?.x ?? 0;
   const y = motionState.position?.y ?? ctx.canvas.height * 0.72;
   const facing = motionState.facing || 1;
+
+  if (activeSkin === 'drive-reptile' && driveReptileAnimator.ready) {
+    const rendered = driveReptileAnimator.draw(ctx, {
+      x,
+      y,
+      state: motionState.state || motionState.gait || 'idle',
+      facing,
+      time: motionState.time || 0,
+      panic: motionState.panic || 0,
+      width: 168 * rig.scale,
+      height: 208 * rig.scale
+    });
+    if (rendered) return;
+  }
+
   const phase = motionState.phase || {};
   const limbs = motionState.limbs || {};
-  const p = rig.palette;
   const breath = rig.pose.breath;
 
   ctx.save();
