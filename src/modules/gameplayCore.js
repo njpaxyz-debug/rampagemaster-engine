@@ -25,6 +25,7 @@ export function createGameplayState(seed = {}, options = {}) {
     campaign: createCampaignState(seed.campaign || {}),
     mission: seed.mission || null,
     district: Math.max(0, Math.floor(seed.district || 0)),
+    rampageMeter: Math.max(0, Math.min(100, Number(seed.rampageMeter) || 0)),
     districtsUnlocked: Array.isArray(seed.districtsUnlocked) ? [...seed.districtsUnlocked] : [true],
     inventory: pet.inventory,
     upgrades: pet.upgrades,
