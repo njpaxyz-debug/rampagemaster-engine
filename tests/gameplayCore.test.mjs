@@ -19,6 +19,7 @@ assert.equal(core.care('feed').ok, true);
 assert.equal(core.convert('bo').ok, true); assert.equal(core.state.wallet.opal, 1);
 core.state.wallet.bones = 45; assert.equal(core.buy('snack').ok, true); assert.equal(core.state.inventory.snack, 3);
 core.state.wallet.opal = 1; assert.equal(core.enterArcade('premium').ok, true); const reward = core.settleArcade(9, 'premium'); assert.equal(reward.quartz, 1); assert.equal(core.state.wallet.quartz, 1);
-core.save(); const dna = core.state.hatch.dna; const fresh = createGameplayCore({ characterEngine: engine, storage }); fresh.load(); assert.equal(fresh.state.hatch.dna, dna); assert.equal(fresh.state.pet.hatched, true);
+const mission = core.beginCampaign(0); assert.equal(mission.mission.title, 'DEMOLITION RUN'); core.campaignProgress(4, { districtCount: 3 }); assert.equal(core.state.campaign.missionsCompleted, 1);
+core.save(); const dna = core.state.hatch.dna; const fresh = createGameplayCore({ characterEngine: engine, storage }); fresh.load(); assert.equal(fresh.state.hatch.dna, dna); assert.equal(fresh.state.pet.hatched, true); assert.equal(fresh.state.campaign.missionsCompleted, 1);
 const exported = core.export(); const imported = fresh.import(exported); assert.equal(imported.ok, true); assert.equal(fresh.state.genome.dna, core.state.genome.dna);
 console.log('gameplay core: ok');
