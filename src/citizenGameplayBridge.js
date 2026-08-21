@@ -3,6 +3,9 @@ const CLICK_RADIUS = 22;
 const RESPAWN_MIN_MS = 10000;
 const RESPAWN_SPAN_MS = 15000;
 
+function haptic(pattern) { try { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); } catch (_) {} }
+function feedback(message, kind = 'good') { try { if (typeof window !== 'undefined') window.RampageFeedback?.notify?.(message, kind); } catch (_) {} }
+
 export function citizenCampaignScore(citizen) {
   return 24 + Math.max(1, Number(citizen?.value) || 1) * 3;
 }
@@ -54,6 +57,8 @@ export function consumeCityCitizen(host, runtime, citizen, random = Math.random,
   }
   commands.save();
   host.gameplayPanels?.render?.();
+  haptic([10]);
+  feedback(`FEED +${care.bones || 0} BONES${scoreResult?.gained ? ` · +${scoreResult.gained} SCORE` : ''}`);
   return { ok: true, citizenId: citizen.id, value: citizen.value, care, scoreResult, campaignResult, respawnMs: delayMs };
 }
 
@@ -76,16 +81,49 @@ export function updateCitizenRespawns(host, runtime, now = performance.now(), ra
   return count;
 }
 
+export function drawFeedTargets(ctx, host) {
+  const session = host?.gameplay?.state?.mission;
+  if (!ctx || session?.phase !== 'active' || session.mission?.kind !== 'feed') return 0;
+  const city = host.city;
+  const petX = host.state?.position?.x || 0;
+  const nearest = nearestCitizen(city, petX, CONSUME_RADIUS)?.citizen || null;
+  let count = 0;
+  for (const citizen of city.citizens || []) {
+    const x = Number(citizen.x) || 0;
+    const y = (Number(city.groundY) || 420) - 18;
+    ctx.save();
+    ctx.strokeStyle = citizen === nearest ? '#39ff14' : 'rgba(255,215,107,.55)';
+    ctx.lineWidth = citizen === nearest ? 3 : 1.5;
+    ctx.setLineDash(citizen === nearest ? [] : [4, 4]);
+    ctx.beginPath(); ctx.arc(x, y, citizen === nearest ? 14 : 10, 0, Math.PI * 2); ctx.stroke();
+    if (citizen === nearest) {
+      ctx.fillStyle = '#39ff14';
+      ctx.font = '900 9px ui-monospace,monospace';
+      ctx.fillText('FEED', x + 13, y - 11);
+    }
+    ctx.restore();
+    count += 1;
+  }
+  return count;
+}
+
 export function attachCitizenGameplayBridge(host = window.RampageMaster) {
   if (!host?.gameplayCommands || !host?.city) throw new Error('Citizen gameplay bridge requires gameplay and city APIs.');
   const canvas = document.querySelector('[data-rampage-canvas]');
   if (!canvas) throw new Error('Citizen gameplay bridge requires the high-res canvas.');
+  const overlay = document.createElement('canvas');
+  overlay.dataset.rampageCitizenTargets = 'true';
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:3;pointer-events:none;';
+  document.body.appendChild(overlay);
+  const ctx = overlay.getContext('2d');
   const runtime = { respawn: [], stopped: false };
 
   const consume = (citizen) => consumeCityCitizen(host, runtime, citizen);
   const consumeNearest = () => {
     const found = nearestCitizen(host.city, host.state?.position?.x || 0);
-    return found ? consume(found.citizen) : { ok: false, reason: 'no-citizen-in-range' };
+    if (!found) { haptic([35]); feedback('MOVE WITHIN RANGE OF A CITIZEN', 'warn'); return { ok: false, reason: 'no-citizen-in-range' }; }
+    return consume(found.citizen);
   };
 
   const pointer = (event) => {
@@ -115,6 +153,9 @@ export function attachCitizenGameplayBridge(host = window.RampageMaster) {
   const frame = () => {
     if (runtime.stopped) return;
     updateCitizenRespawns(host, runtime);
+    if (overlay.width !== canvas.width || overlay.height !== canvas.height) { overlay.width = canvas.width; overlay.height = canvas.height; }
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    drawFeedTargets(ctx, host);
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
@@ -131,6 +172,7 @@ export function attachCitizenGameplayBridge(host = window.RampageMaster) {
       cancelAnimationFrame(raf);
       canvas.removeEventListener('pointerdown', pointer, true);
       document.removeEventListener('click', careCapture, true);
+      overlay.remove();
     }
   };
   host.citizenGameplay = api;
