@@ -193,10 +193,11 @@ export function drawCampaignEncounter(ctx, host, runtime) {
   if (bossId) {
     const boss = host.city?.buildings?.find((building) => building.id === bossId);
     if (boss && boss.hp > 0) {
+      const topY = (Number(host.city?.groundY) || 420) - Number(boss.h || 0);
       ctx.save(); ctx.strokeStyle = '#ffd76b'; ctx.lineWidth = 3; ctx.setLineDash([8, 5]);
-      ctx.strokeRect(boss.x - 5, boss.y - 14, boss.w + 10, boss.h + 18); ctx.setLineDash([]);
-      ctx.fillStyle = '#ffd76b'; ctx.font = '900 13px ui-monospace,monospace'; ctx.fillText('COMMAND TOWER', boss.x + 4, boss.y - 18); ctx.restore();
-      drawBar(ctx, boss.x, boss.y - 10, boss.w, boss.hp / Math.max(1, boss.max), '#ffd76b');
+      ctx.strokeRect(boss.x - 5, topY - 14, boss.w + 10, boss.h + 18); ctx.setLineDash([]);
+      ctx.fillStyle = '#ffd76b'; ctx.font = '900 13px ui-monospace,monospace'; ctx.fillText('COMMAND TOWER', boss.x + 4, topY - 18); ctx.restore();
+      drawBar(ctx, boss.x, topY - 10, boss.w, boss.hp / Math.max(1, boss.max), '#ffd76b');
     }
   }
 }
@@ -206,12 +207,12 @@ function decorateCampaignPanel(host, runtime) {
   if (!drawer) return;
   const session = host?.gameplay?.state?.mission;
   if (!session || session.phase !== 'active') return;
-  const oldWarning = [...drawer.querySelectorAll('.rmWarning')].find((node) => node.textContent.includes('not yet connected'));
-  if (!oldWarning) return;
-  if (session.mission.kind === 'response') oldWarning.textContent = `Response layer online · ${runtime.encounter.units.length} active unit${runtime.encounter.units.length === 1 ? '' : 's'} · fire is decorative/non-damaging.`;
+  const status = drawer.querySelector('.rmWarning');
+  if (!status || (session.mission.kind !== 'response' && session.mission.kind !== 'boss')) return;
+  if (session.mission.kind === 'response') status.textContent = `Response layer online · ${runtime.encounter.units.length} active unit${runtime.encounter.units.length === 1 ? '' : 's'} · threat ${Math.round(session.threat || 0)}% · fire is decorative/non-damaging.`;
   else if (session.mission.kind === 'boss') {
     const boss = host.city?.buildings?.find((building) => building.id === runtime.encounter.bossId);
-    oldWarning.textContent = boss ? `Command tower online · HP ${Math.ceil(boss.hp)}/${Math.ceil(boss.max)} · destroy the marked tower.` : 'Command tower target is arming.';
+    status.textContent = boss ? `Command tower online · HP ${Math.ceil(boss.hp)}/${Math.ceil(boss.max)} · threat ${Math.round(session.threat || 0)}% · destroy the marked tower.` : 'Command tower target is arming.';
   }
 }
 
