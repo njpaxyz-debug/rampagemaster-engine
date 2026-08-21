@@ -1,4 +1,4 @@
-import { createHatchState, recordHatchTap, selectCharacterEngineOptions } from './hatchDna.js';
+import { chooseEgg, createHatchState, getEggSpecies, recordHatchTap, selectCharacterEngineOptions } from './hatchDna.js';
 import { applyCareAction, applyInventoryItem, createPetProgressionState } from './petProgression.js';
 import { createProgressionWallet, convertProgressionCurrency, purchaseMasterShopItem } from './economyProgression.js';
 import { applyArcadeReward, createArcadeProgression, payArcadeEntry, settleArcadeRound } from './arcadeProgression.js';
@@ -59,6 +59,23 @@ export function createGameplayCore({ seed = {}, economyProfile = seed.economyPro
     get characterEngine() { return engine; },
     setCharacterEngine(nextEngine) { engine = nextEngine; return api; },
     snapshot() { return JSON.parse(JSON.stringify(state)); },
+    setName(name) {
+      const clean = String(name || '').trim().slice(0, 18) || 'Mochi';
+      state.pet.name = clean;
+      state.hatch.name = clean;
+      state.lastAction = { type: 'setName', at: Date.now(), name: clean };
+      return clean;
+    },
+    chooseEgg(eggId) {
+      const result = chooseEgg(state.hatch, eggId);
+      if (result.ok) {
+        const species = getEggSpecies(eggId);
+        state.pet.personality = species.trait;
+        state.pet.speciesEvolution = species.evolution;
+      }
+      state.lastAction = { type: 'chooseEgg', at: Date.now(), result };
+      return result;
+    },
     hatchTap(tap, options = {}) {
       const result = recordHatchTap(state.hatch, tap, options);
       if (result.hatched) {
@@ -66,9 +83,12 @@ export function createGameplayCore({ seed = {}, economyProfile = seed.economyPro
         state.pet.bond = Math.max(state.pet.bond, 15);
         state.pet.xp = Math.max(state.pet.xp, 25);
         state.hatch.name = state.pet.name;
+        const species = getEggSpecies(state.hatch.eggId);
+        state.pet.personality = state.pet.personality || species.trait;
+        state.pet.speciesEvolution = species.evolution;
         const selectedOptions = engine ? selectCharacterEngineOptions(engine, result.genomeSeed) : [];
         const validation = engine ? validateSelection(engine, selectedOptions) : null;
-        state.genome = { seed: result.genomeSeed, dna: result.dna, selectedOptions, validation };
+        state.genome = { seed: result.genomeSeed, dna: result.dna, selectedOptions, validation, eggSpecies: species.id };
       }
       state.lastAction = { type: 'hatchTap', at: Date.now(), result: { ok: result.ok, hatched: result.hatched, remaining: result.remaining ?? 0 } };
       return result;
