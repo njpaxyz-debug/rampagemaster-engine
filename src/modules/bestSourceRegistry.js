@@ -118,6 +118,20 @@ export const BEST_SOURCE_REGISTRY = Object.freeze({
     driveId: '1DILKs2N860Wi0Qw5b-8qALCmyZsk_Clr',
     rank: 15,
     reason: 'Best UI wrapper lane for compact playable shell and themed arcade-like presentation.'
+  },
+  campaignEncounters: {
+    activeAdapter: 'src/campaignEncounterBridge.js',
+    bestSource: 'RampageMaster_DEPLOYMENT_DEFINITIVE_v12.html · embedded city RM3/RM8',
+    driveId: '13dOkLcpyijTDPNeDcIdSfud_7oyKTczf',
+    rank: 16,
+    reason: 'Restores source response drones/tanks, HP scaling, kill scoring, pickups, threat pressure and command-tower boss scaling while retaining the later RM8 non-damaging decorative response-fire safety behavior.'
+  },
+  liveCitizenFeeding: {
+    activeAdapter: 'src/citizenGameplayBridge.js',
+    bestSource: 'rampagemaster_master_v1.html + RampageMaster_DEPLOYMENT_DEFINITIVE_v12.html',
+    driveId: '13dOkLcpyijTDPNeDcIdSfud_7oyKTczf',
+    rank: 17,
+    reason: 'Connects the Master consume-care effects to actual high-res citizens and the later campaign FEED CHAIN scoring/progress contract, including source-scale delayed citizen respawn.'
   }
 });
 
