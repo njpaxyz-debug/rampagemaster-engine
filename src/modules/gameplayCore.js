@@ -3,6 +3,7 @@ import { applyCareAction, applyInventoryItem, createPetProgressionState } from '
 import { createProgressionWallet, convertProgressionCurrency, purchaseMasterShopItem } from './economyProgression.js';
 import { applyArcadeReward, createArcadeProgression, payArcadeEntry, settleArcadeRound } from './arcadeProgression.js';
 import { createStateStore } from './persistence.js';
+import { addCampaignProgress, addCampaignScore, campaignMissionComplete, completeCampaignMission, createCampaignState, createMissionSession, failCampaignMission } from './campaignProgression.js';
 import { validateSelection } from './characterEngine.js';
 
 export const GAMEPLAY_CORE_VERSION = 'pilot-gameplay-core-1';
@@ -20,6 +21,10 @@ export function createGameplayState(seed = {}, options = {}) {
     hatch: createHatchState({ name: pet.name, ...(seed.hatch || {}) }),
     genome: seed.genome || null,
     arcade: createArcadeProgression(seed.arcade || {}),
+    campaign: createCampaignState(seed.campaign || {}),
+    mission: seed.mission || null,
+    district: Math.max(0, Math.floor(seed.district || 0)),
+    districtsUnlocked: Array.isArray(seed.districtsUnlocked) ? [...seed.districtsUnlocked] : [true],
     inventory: pet.inventory,
     upgrades: pet.upgrades,
     skins: seed.skins || {},
@@ -101,6 +106,33 @@ export function createGameplayCore({ seed = {}, economyProfile = seed.economyPro
       applyArcadeReward(state.wallet, reward);
       state.lastAction = { type: 'arcadeReward', mode, at: Date.now(), result: reward };
       return reward;
+    },
+    beginCampaign(district = state.district) {
+      state.district = Math.max(0, Math.floor(district || 0));
+      state.mission = createMissionSession(state.campaign, state.district);
+      state.lastAction = { type: 'campaignStart', at: Date.now(), mission: state.mission.mission.title };
+      return state.mission;
+    },
+    campaignScore(base, reason) {
+      if (!state.mission) return { ok: false, reason: 'no-mission' };
+      const result = addCampaignScore(state.campaign, state.mission, base, reason);
+      state.lastAction = { type: 'campaignScore', at: Date.now(), result };
+      return result;
+    },
+    campaignProgress(amount = 1, options = {}) {
+      if (!state.mission) return { ok: false, reason: 'no-mission' };
+      addCampaignProgress(state.mission, amount);
+      const complete = campaignMissionComplete(state.mission, options);
+      if (!complete) return { ok: true, complete: false, progress: state.mission.progress };
+      const result = completeCampaignMission({ campaign: state.campaign, session: state.mission, wallet: state.wallet, pet: state.pet, districtsUnlocked: state.districtsUnlocked, districtCount: Math.max(1, options.districtCount || state.districtsUnlocked.length) });
+      state.lastAction = { type: 'campaignComplete', at: Date.now(), result };
+      return { ...result, complete: true };
+    },
+    failCampaign(reason) {
+      if (!state.mission) return { ok: false, reason: 'no-mission' };
+      const result = failCampaignMission(state.mission, reason);
+      state.lastAction = { type: 'campaignFail', at: Date.now(), result };
+      return result;
     },
     save() { syncReferences(); store.save(state); return api.snapshot(); },
     load() {
