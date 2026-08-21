@@ -1,0 +1,29 @@
+name: Pilot Migration Tests
+
+on:
+  push:
+    branches:
+      - codex/pilot-import-2026-08-20
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  node-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run module regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test_file in $(find tests -maxdepth 1 -name '*.test.mjs' -print | sort); do
+            echo "▶ ${test_file}"
+            node --experimental-default-type=module "${test_file}"
+          done
