@@ -22,4 +22,5 @@ core.state.wallet.opal = 1; assert.equal(core.enterArcade('premium').ok, true); 
 const mission = core.beginCampaign(0); assert.equal(mission.mission.title, 'DEMOLITION RUN'); core.campaignProgress(4, { districtCount: 3 }); assert.equal(core.state.campaign.missionsCompleted, 1);
 core.save(); const dna = core.state.hatch.dna; const fresh = createGameplayCore({ characterEngine: engine, storage }); fresh.load(); assert.equal(fresh.state.hatch.dna, dna); assert.equal(fresh.state.pet.hatched, true); assert.equal(fresh.state.campaign.missionsCompleted, 1);
 const exported = core.export(); const imported = fresh.import(exported); assert.equal(imported.ok, true); assert.equal(fresh.state.genome.dna, core.state.genome.dna);
+const legacy = fresh.importLegacy({ version: 'MASTER_2026_05_09', hatched: true, name: 'Legacy', food: 55, joy: 60, energy: 65, clean: 70, health: 80, wallet: { bones: 321, opal: 0, quartz: 0, fossils: 0, oil: 0 }, inventory: {}, upgrades: {} }); assert.equal(legacy.ok, true); assert.equal(fresh.state.pet.name, 'Legacy'); assert.equal(fresh.state.pet.food, 55); assert.equal(fresh.state.wallet.bones, 321);
 console.log('gameplay core: ok');
