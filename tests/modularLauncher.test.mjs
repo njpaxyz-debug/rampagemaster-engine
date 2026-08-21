@@ -9,7 +9,8 @@ const required = [
   './visualSkinControls.js',
   './cityGameplayBridge.js',
   './campaignEncounterBridge.js',
-  './citizenGameplayBridge.js'
+  './citizenGameplayBridge.js',
+  './campaignStatusHud.js'
 ];
 for (const src of required) assert.ok(html.includes(`src="${src}"`), `launcher must load ${src}`);
 const positions = required.map((src) => html.indexOf(`src="${src}"`));
