@@ -3,7 +3,7 @@ import { applyCareAction, applyInventoryItem, createPetProgressionState } from '
 import { createProgressionWallet, convertProgressionCurrency, purchaseMasterShopItem } from './economyProgression.js';
 import { applyArcadeReward, createArcadeProgression, payArcadeEntry, settleArcadeRound } from './arcadeProgression.js';
 import { createStateStore } from './persistence.js';
-import { addCampaignProgress, addCampaignScore, campaignMissionComplete, completeCampaignMission, createCampaignState, createMissionSession, failCampaignMission } from './campaignProgression.js';
+import { addCampaignProgress, addCampaignScore, campaignMissionComplete, completeCampaignMission, createCampaignState, createMissionSession, failCampaignMission, tickCampaignMission } from './campaignProgression.js';
 import { validateSelection } from './characterEngine.js';
 import { migrateLegacyRampageState } from './legacyStateMigration.js';
 
@@ -133,6 +133,12 @@ export function createGameplayCore({ seed = {}, economyProfile = seed.economyPro
       state.mission = createMissionSession(state.campaign, state.district);
       state.lastAction = { type: 'campaignStart', at: Date.now(), mission: state.mission.mission.title };
       return state.mission;
+    },
+    campaignTick(frames = 1) {
+      if (!state.mission) return { ok: false, reason: 'no-mission' };
+      const result = tickCampaignMission(state.mission, frames);
+      if (result.expired) state.lastAction = { type: 'campaignFail', at: Date.now(), result };
+      return result;
     },
     campaignScore(base, reason) {
       if (!state.mission) return { ok: false, reason: 'no-mission' };
