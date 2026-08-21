@@ -5,6 +5,7 @@ import { applyArcadeReward, createArcadeProgression, payArcadeEntry, settleArcad
 import { createStateStore } from './persistence.js';
 import { addCampaignProgress, addCampaignScore, campaignMissionComplete, completeCampaignMission, createCampaignState, createMissionSession, failCampaignMission } from './campaignProgression.js';
 import { validateSelection } from './characterEngine.js';
+import { migrateLegacyRampageState } from './legacyStateMigration.js';
 
 export const GAMEPLAY_CORE_VERSION = 'pilot-gameplay-core-1';
 
@@ -147,6 +148,14 @@ export function createGameplayCore({ seed = {}, economyProfile = seed.economyPro
       const result = store.import(text);
       if (result.ok) { state = result.state; syncReferences(); }
       return result;
+    },
+    importLegacy(input) {
+      const migration = migrateLegacyRampageState(input);
+      if (!migration.ok) return migration;
+      state = createGameplayState(migration.seed, { economyProfile: migration.seed.economyProfile || economyProfile });
+      syncReferences();
+      state.lastAction = { type: 'legacyImport', format: migration.format, at: Date.now(), warnings: migration.warnings };
+      return { ...migration, state: api.snapshot() };
     }
   };
   return api;
