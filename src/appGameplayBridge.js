@@ -42,6 +42,10 @@ export async function attachGameplayBridge(host, options = {}) {
     convert: (routeId, count) => core.convert(routeId, count),
     enterArcade: (mode) => core.enterArcade(mode),
     settleArcade: (score, mode) => core.settleArcade(score, mode),
+    beginCampaign: (district) => core.beginCampaign(district),
+    campaignScore: (base, reason) => core.campaignScore(base, reason),
+    campaignProgress: (amount, campaignOptions) => core.campaignProgress(amount, campaignOptions),
+    failCampaign: (reason) => core.failCampaign(reason),
     save: () => core.save(),
     load: () => {
       core.load();
@@ -51,6 +55,11 @@ export async function attachGameplayBridge(host, options = {}) {
     export: (exportOptions) => core.export(exportOptions),
     import: (text) => {
       const result = core.import(text);
+      if (result.ok) shareHostWallet(core, host.wallet);
+      return result;
+    },
+    importLegacy: (input) => {
+      const result = core.importLegacy(input);
       if (result.ok) shareHostWallet(core, host.wallet);
       return result;
     },
