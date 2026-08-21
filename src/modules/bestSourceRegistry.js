@@ -49,60 +49,74 @@ export const BEST_SOURCE_REGISTRY = Object.freeze({
     rank: 5,
     reason: 'Best connected arcade loop: free/basic/premium entry, five-second rounds, progressive spawn speed, streak persistence, boss payouts, and shared-wallet rewards.'
   },
+  campaignProgression: {
+    activeAdapter: 'src/modules/campaignProgression.js',
+    bestSource: 'RampageMaster_DEPLOYMENT_DEFINITIVE_v12.html',
+    driveId: '13dOkLcpyijTDPNeDcIdSfud_7oyKTczf',
+    rank: 6,
+    reason: 'Preserves authored five-mission campaign rotation, district/cycle scaling, combo scoring, rank XP, mission payouts, and district unlock cadence as testable state logic.'
+  },
   persistence: {
     activeAdapter: 'src/modules/persistence.js',
     bestSource: 'rampagemaster_master_v1.html + RampageMaster_DEPLOYMENT_DEFINITIVE_v12.html',
     driveId: '12_hVI3EJqE1ualFoYginxtVqFCszscpo',
-    rank: 6,
+    rank: 7,
     reason: 'Unifies local save behavior with later import/export workflows behind a versioned, testable storage adapter with memory fallback.'
+  },
+  legacyStateMigration: {
+    activeAdapter: 'src/modules/legacyStateMigration.js',
+    bestSource: 'rampagemaster_master_v1.html + RampageMaster_DEPLOYMENT_DEFINITIVE_v12.html',
+    driveId: '12_hVI3EJqE1ualFoYginxtVqFCszscpo',
+    rank: 8,
+    reason: 'Imports both major historical save schemas without inventing CharacterEngine IDs or pretending missing v12 care meters existed.'
   },
   spritePoseAssets: {
     activeAdapter: 'src/animation/driveSpriteSheetAnimator.js',
     bestSource: 'reptile scientist canva sprite sheet.jpg.png + CharacterEngine_FeatureMap',
     driveId: '1IU0QpVvrH_cfvGMN0It4_xOd_ttUfYxG',
-    rank: 7,
+    rank: 9,
     reason: 'Grounded six-pose Drive sprite source; pose semantics are mapped without inventing nonexistent atlas frames.'
   },
   directDeployment: {
     activeAdapter: 'src/modules/directCityDeployment.js',
     bestSource: 'RampageMaster_DEPLOYMENT_DEFINITIVE_v12.html',
     driveId: '13dOkLcpyijTDPNeDcIdSfud_7oyKTczf',
-    rank: 8,
+    rank: 10,
     reason: 'Best deployment contract: wait for the live city API, install directly, require ready=true, and surface explicit failure.'
   },
   proportions: {
     activeAdapter: 'src/modules/visualHighRes.js',
     bestSource: 'rampagemaster_admin_proportions_v7_1.html',
     driveId: '1LlZb_uVybuPpu-zZ1iXl2cIw2sLKwUwp',
-    rank: 9,
+    rank: 11,
     reason: 'Best proportions/admin checkpoint for scale, body mass, and readable monster silhouette.'
   },
   architectureGameplay: {
     activeAdapter: 'src/modules/cityHighRes.js',
     bestSource: 'rampagemaster_unified_architecture_gameplay_v6_1.html',
     driveId: '1epm_W9g2cR5mML1VQIKovHotZyKIcdyo',
-    rank: 10,
+    rank: 12,
     reason: 'Best gameplay-facing city loop: building damage, crumbling, regeneration, and skyline interaction.'
   },
   skyline: {
     activeAdapter: 'src/modules/cityHighRes.js',
     bestSource: 'rampagemaster_skyline_intelligence_v5.html',
     driveId: '17W7AclrcISBdEpcEwmedw38K4Z1JY7MP',
-    rank: 11,
+    rank: 13,
     reason: 'Best skyline intelligence lane for layered city silhouettes, geography, time-of-day, and environment cues.'
   },
   architectureSkins: {
     activeAdapter: 'src/modules/themePacks.js',
     bestSource: 'rampagemaster_architecture_skins_v4.html',
     driveId: '1SeHD2boJoZexcqA3LZw2Ow0Zd7omlTC5',
-    rank: 12,
+    rank: 14,
     reason: 'Best skin/theme package source for materials, palettes, windows, sculpture, flora, and fauna.'
   },
   uxTheme: {
     activeAdapter: 'src/index.modular.html',
     bestSource: 'rampagemaster_ux_theme_v3.html',
     driveId: '1DILKs2N860Wi0Qw5b-8qALCmyZsk_Clr',
-    rank: 13,
+    rank: 15,
     reason: 'Best UI wrapper lane for compact playable shell and themed arcade-like presentation.'
   }
 });
