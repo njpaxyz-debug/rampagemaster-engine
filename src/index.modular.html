@@ -26,11 +26,11 @@
     .card { pointer-events: auto; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42); backdrop-filter: blur(12px); padding: 12px 14px; }
     h1 { margin: 0; font-size: clamp(18px, 4vw, 34px); letter-spacing: 0.06em; line-height: 0.95; text-transform: uppercase; text-shadow: 0 0 20px rgba(57,255,20,.5); }
     p { margin: 8px 0 0; max-width: 560px; color: rgba(238,247,255,.72); font-size: 13px; line-height: 1.45; }
-    .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; max-width: min(620px, 54vw); }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; max-width: min(720px, 62vw); }
     button { border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.08); color: #eef7ff; padding: 9px 12px; font: inherit; font-weight: 900; letter-spacing: .04em; cursor: pointer; }
     button.is-active { color: var(--green); border-color: rgba(57,255,20,.7); box-shadow: 0 0 20px rgba(57,255,20,.2); }
-    .debug { position: fixed; right: 14px; bottom: 14px; z-index: 10; width: min(520px, calc(100vw - 28px)); max-height: min(420px, 48vh); overflow: auto; white-space: pre-wrap; font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: rgba(238,247,255,.78); }
-    .note { position: fixed; left: 14px; bottom: 14px; z-index: 10; max-width: min(560px, calc(100vw - 28px)); color: rgba(238,247,255,.75); font-size: 12px; line-height: 1.4; }
+    .debug { position: fixed; right: 14px; bottom: 84px; z-index: 10; width: min(520px, calc(100vw - 28px)); max-height: min(420px, 48vh); overflow: auto; white-space: pre-wrap; font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: rgba(238,247,255,.78); }
+    .note { position: fixed; left: 14px; bottom: 84px; z-index: 10; max-width: min(560px, calc(100vw - 28px)); color: rgba(238,247,255,.75); font-size: 12px; line-height: 1.4; }
     code { color: var(--gold); }
     @media (max-width: 720px) { .hud { flex-direction: column; } .controls { justify-content: flex-start; max-width: calc(100vw - 28px); } .debug { display: none; } .note { display: none; } }
   </style>
@@ -43,7 +43,7 @@
       <p>
         This launcher connects the strongest source lanes: v7.6.3 motion, CharacterEngine DNA,
         canonical care/economy progression, v7.1 proportions, v6.1/v5 city intelligence,
-        Drive pose assets, architecture skins, crumbling/regeneration, and persistent gameplay state.
+        Drive pose assets, architecture skins, crumbling/regeneration, campaign, and persistent gameplay state.
       </p>
     </section>
     <nav class="card controls" aria-label="High-resolution module controls">
@@ -58,11 +58,13 @@
   </header>
   <aside class="card note">
     Click or tap the city to set a manual target. Theme cycles through the high-resolution city packs.
-    Convert uses the sourced Master Bones → Opal → Quartz → Fossils → Oil ladder. The bottom destination rail opens Nest, Bank, Mall and Arcade without replacing the city loop.
+    Convert uses the sourced Master Bones → Opal → Quartz → Fossils → Oil ladder. The bottom destination rail opens Nest, Bank, Mall and Arcade; the Skin control switches between the procedural kaiju and the real Drive six-pose sheet.
   </aside>
   <pre class="card debug" data-rampage-debug>Loading high-resolution modular engine...</pre>
   <script type="module" src="./app.js"></script>
   <script type="module" src="./appGameplayBridge.js"></script>
   <script type="module" src="./gameplayPanels.js"></script>
+  <script type="module" src="./visualSkinControls.js"></script>
+  <script type="module" src="./cityGameplayBridge.js"></script>
 </body>
 </html>
