@@ -1,6 +1,17 @@
 const u32 = (n) => n >>> 0;
 const hex32 = (n) => u32(n).toString(16).padStart(8, '0');
 
+export const MASTER_EGG_SPECIES = Object.freeze([
+  Object.freeze({ id: 'ember', name: 'Emberwhelp', icon: '🔥', trait: 'bold', color: '#e85b3b', accent: '#ffd46b', evolution: 'Cinderhorn' }),
+  Object.freeze({ id: 'sprout', name: 'Sproutle', icon: '🌱', trait: 'gentle', color: '#42c86a', accent: '#ceff91', evolution: 'Mossback' }),
+  Object.freeze({ id: 'tide', name: 'Tidepup', icon: '💧', trait: 'curious', color: '#44aaff', accent: '#adf2ff', evolution: 'Stormfin' }),
+  Object.freeze({ id: 'void', name: 'Voidling', icon: '🟣', trait: 'strange', color: '#9b59ff', accent: '#66ff88', evolution: 'Nightjaw' })
+]);
+
+export function getEggSpecies(eggId = 'ember') {
+  return MASTER_EGG_SPECIES.find((species) => species.id === eggId) || MASTER_EGG_SPECIES[0];
+}
+
 export function hashGenomeString(value = '') {
   let h = 2166136261;
   for (let i = 0; i < String(value).length; i += 1) {
@@ -57,9 +68,10 @@ export function recordHatchTap(state, tap, options = {}) {
 
 export function chooseEgg(state, eggId) {
   if (state.hatched) return { ok: false, reason: 'already-hatched', eggId: state.eggId };
+  if (!MASTER_EGG_SPECIES.some((species) => species.id === eggId)) return { ok: false, reason: 'unknown-egg', eggId };
   state.eggId = eggId;
   state.taps = [];
-  return { ok: true, eggId };
+  return { ok: true, eggId, species: getEggSpecies(eggId) };
 }
 
 export function selectCharacterEngineOptions(engine, genomeSeed, { includeInactive = false } = {}) {
