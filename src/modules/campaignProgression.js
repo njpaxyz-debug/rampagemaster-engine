@@ -49,6 +49,18 @@ export function createMissionSession(campaign, district = 0) {
   return { phase: 'active', mission, progress: 0, score: 0, combo: 1, comboTimer: 0, threat: mission.kind === 'response' ? 34 : 0, timeFrames: mission.time * 60, maxFrames: mission.time * 60, result: '', rewardBones: 0, rewardOpal: 0 };
 }
 
+export function tickCampaignMission(session, frames = 1) {
+  if (!session || session.phase !== 'active') return { ok: false, reason: 'inactive', phase: session?.phase || null };
+  const elapsed = Math.max(0, Number(frames) || 0);
+  session.comboTimer = Math.max(0, (session.comboTimer || 0) - elapsed);
+  session.timeFrames = Math.max(0, (session.timeFrames || 0) - elapsed);
+  if (session.timeFrames <= 0) {
+    failCampaignMission(session, 'TIME EXPIRED');
+    return { ok: true, expired: true, phase: session.phase, timeFrames: 0 };
+  }
+  return { ok: true, expired: false, phase: session.phase, timeFrames: session.timeFrames, comboTimer: session.comboTimer };
+}
+
 export function addCampaignScore(campaign, session, base, reason = 'IMPACT') {
   if (session.phase !== 'active') return { ok: false, reason: 'inactive' };
   session.combo = session.comboTimer > 0 ? Math.min(12, session.combo + 1) : 1;
